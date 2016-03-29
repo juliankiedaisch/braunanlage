@@ -16,7 +16,7 @@ $('#button_biertyp2').click(function () {
     var data = new Array();
     data[0] = "beertyps";
     data[1] = myOptions;
-    ws.send(JSON.stringify(myOptions));
+    ws.send(JSON.stringify(data));
 });
 /*Biertyp bearbeiten ausblenden (Abbrechen) */
 $('#button_biertyp3').click(function () {
