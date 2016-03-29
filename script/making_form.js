@@ -36,7 +36,7 @@ $.each(myOptions, function(val, text) {
 
 /* Schrittmotor */
 $('#engine1_up').click(function () {
-
+  var data = new Array();
   data[0] = "engine";
   data[1] = [0, 1, 512];
   ws.send(JSON.stringify(data));
