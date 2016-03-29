@@ -10,7 +10,7 @@ class engine():
         #B=23
         #C=24
         #D=25
-        self.engin_position = 0
+        self.engine_position = 0
         self.A = position[0]
         self.B = position[1]
         self.C = position[2]
@@ -28,7 +28,7 @@ class engine():
         GPIO.output(self.D, False)
 
     def get_engine_position(self):
-        return self.engin_position
+        return self.engine_position
 # Schritte 1 - 8 festlegen
     def Step1(self):
         GPIO.output(self.D, True)
@@ -89,7 +89,7 @@ class engine():
             self.Step7()
             self.Step8()
             self.engin_position += 1
-            self.dc.data_input( "engine1", self.get_engine_position())
+            self.dc.data_input( "engine1", self.get_engine_position()
         GPIO.cleanup()
 
     def cool_down(self, schritte):
@@ -103,5 +103,5 @@ class engine():
             self.Step2()
             self.Step1()
             self.engin_position -= 1
-            self.dc.data_input( "engine1", self.get_engine_position())
+            self.dc.data_input( "engine1", self.get_engine_position()
         GPIO.cleanup()
