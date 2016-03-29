@@ -34,6 +34,11 @@ $.each(myOptions, function(val, text) {
     );
 });
 
-$('#select_biertypen1').change(function () {
-		/* $('#biertyp_message').text($('#select_biertypen1 option:selected').val()); */
+/* Schrittmotor */
+$('#engine1_up').click(function () {
+
+  data[0] = "engine";
+  data[1] = [0, 1, 512];
+  ws.send(JSON.stringify(data));
+
 });

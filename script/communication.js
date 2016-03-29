@@ -3,6 +3,7 @@
     var $clock = $('#server_clock');
     var $temp_up = $('#temp_up');
     var $temp_down = $('#temp_down');
+    var $engine1_position = $('engine1');
 
     ws.onopen = function(){
       $message.attr("class", 'label label-success');
@@ -15,6 +16,7 @@
       $clock.text(json.server_clock);
       $temp_up.text(json.temp_up);
       $temp_down.text(json.temp_down);
+      $engine1_position.text(json.engine1)
 
     };
     ws.onclose = function(ev){

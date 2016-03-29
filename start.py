@@ -96,7 +96,8 @@ if __name__ == '__main__':
 	up = temp_sens.sensor(communication_class,"temp_up","500000071D4C0328")
 	down = temp_sens.sensor(communication_class,"temp_down","570000071CE8A828")
 	#Motor 1
-	engine[0] = engine.engine([22,23,24,25], communication_class)
+	position = [22,23,24,25]
+	engine[0] = engine.engine(position, communication_class)
 	communication_class.data_input("engine1", engine[0].get_engine_position())
 	thread.start_new_thread(up.get_temp, (),)
 	thread.start_new_thread(down.get_temp, (),)
