@@ -88,7 +88,7 @@ class engine():
             self.Step6()
             self.Step7()
             self.Step8()
-            self.engin_position += 1
+            self.engine_position += 1
             self.dc.data_input( "engine1", self.get_engine_position())
         GPIO.cleanup()
 
@@ -102,6 +102,6 @@ class engine():
             self.Step3()
             self.Step2()
             self.Step1()
-            self.engin_position -= 1
+            self.engine_position -= 1
             self.dc.data_input( "engine1", self.get_engine_position())
         GPIO.cleanup()

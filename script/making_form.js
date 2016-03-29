@@ -40,5 +40,10 @@ $('#engine1_up').click(function () {
   data[0] = "engine";
   data[1] = [0, 1, 512];
   ws.send(JSON.stringify(data));
-
+});
+$('#engine1_down').click(function () {
+  var data = new Array();
+  data[0] = "engine";
+  data[1] = [0, 0, 512];
+  ws.send(JSON.stringify(data));
 });

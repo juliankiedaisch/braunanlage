@@ -3,7 +3,7 @@
     var $clock = $('#server_clock');
     var $temp_up = $('#temp_up');
     var $temp_down = $('#temp_down');
-    var $engine1_position = $('engine1');
+    var $engine1_position = $('#engine1');
 
     ws.onopen = function(){
       $message.attr("class", 'label label-success');
