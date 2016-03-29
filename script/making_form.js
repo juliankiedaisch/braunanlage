@@ -13,7 +13,10 @@ $('#button_biertyp2').click(function () {
 		$('#div_biertyp2').hide("slow");
 		myOptions.push($('#neu_biertyp_name').val());
 		mySelect.append($('<option></option>').val($('#neu_biertyp_name').val()).html($('#neu_biertyp_name').val()));
-		ws.send(JSON.stringify(myOptions));
+    var data = new Array();
+    data[0] = "beertyps";
+    data[1] = myOptions;
+    ws.send(JSON.stringify(myOptions));
 });
 /*Biertyp bearbeiten ausblenden (Abbrechen) */
 $('#button_biertyp3').click(function () {
