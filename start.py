@@ -38,11 +38,11 @@ class SocketHandler(websocket.WebSocketHandler):
 			cl.append(self)
 	#Message from Client Handler
 	def on_message(self, message):
+		message = json.loads(message)
 		key = message[0];
 		if key == "beertyps":
 			print message[1];
-		elif key == "engine":
-			print message
+		if key == "engine":
 			a = message[1][0]
 			b = message[1][1]
 			c = message[1][2]
