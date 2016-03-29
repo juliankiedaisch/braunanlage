@@ -42,6 +42,7 @@ class SocketHandler(websocket.WebSocketHandler):
 		if key == "beertyps":
 			print message[1];
 		elif key == "engine":
+			print message
 			a = message[1][0]
 			b = message[1][1]
 			c = message[1][2]

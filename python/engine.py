@@ -4,7 +4,6 @@ import RPi.GPIO as GPIO
 class engine():
 
     def __init__(self, position, dc):
-        GPIO.setmode(GPIO.BCM)
         # Verwendete Pins am Rapberry Pi
         #A=22
         #B=23
@@ -18,6 +17,8 @@ class engine():
         self.time = 0.002
         self.dc = dc
         # Pins aus Ausgaenge definieren
+    def start_GPIOS(self):
+        GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.A,GPIO.OUT)
         GPIO.setup(self.B,GPIO.OUT)
         GPIO.setup(self.C,GPIO.OUT)
@@ -79,6 +80,7 @@ class engine():
         GPIO.output(self.A, False)
 
     def warm_up(self, schritte):
+        self.start_GPIOS()
         for i in range (schritte):
             self.Step1()
             self.Step2()
@@ -93,6 +95,7 @@ class engine():
         GPIO.cleanup()
 
     def cool_down(self, schritte):
+        self.start_GPIOS()
         for i in range (schritte):
             self.Step8()
             self.Step7()
