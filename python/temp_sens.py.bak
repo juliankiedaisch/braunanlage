@@ -1,0 +1,40 @@
+import ow
+from  threading import Thread
+import time
+import sqlite3
+import os
+
+class sensor(Thread):
+    #sensor ist die Adresse des Sensors
+    def __init__(self, sensor):
+        #Location wird vorgegeben
+        self.location = "localhost:4304"
+        self.sql_c =  sqlite3.connect("database/temperatur.db", check_same_thread=False)
+        self.cursor_c = self.sql_c.cursor()
+        Thread.__init__(self)
+        #self.temp_sensor_down = "570000071CE8A828"
+        #self.temp_sensor_up = "500000071D4C0328"
+        self.sensor_adr = sensor
+        #OW wird initialisiert
+        ow.init(self.location)
+        
+    def get_sensor_liste(self):
+        return  ow.Sensor("/").sensorList()
+    def get_sensor(self, sensor, sensorlist):
+        for item in sensorlist[:]:
+            if item.r_address != sensor:
+                sensorlist.remove( item ) 
+        return sensorlist
+    def run(self):
+        sensor = self.get_sensor(self.sensor_adr, self.get_sensor_liste())
+        while True:
+            sql_command = """UPDATE sensoren SET temperatur='""" + str(round(float(sensor[0].temperature),1)) + """' WHERE name='"""+self.sensor_adr+"""';"""
+            self.cursor_c.execute(sql_command)
+            self.sql_c.commit()
+            data = self.cursor_c.execute("SELECT * FROM sensoren")
+            time.sleep(2)
+            
+#up = sensor("500000071D4C0328")
+#down = sensor("570000071CE8A828")
+#up.start()
+#down.start()

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Brausteuerung Test</title>
+  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Brausteuerung Test</h1>
+    <hr>
+      Steuerungsstatus : <span id="message"></span> : <span id="clock"></span>
+
+    <hr>
+    <h3>Wichtige Informationen</h3>
+    <hr> 
+    <button id="button1">Testdruecken</button> 
+  </div>
+  <script>
+    var ws = new WebSocket('ws://192.168.178.39:8888/ws');
+    var $message = $('#message');
+    var $clock = $('#clock');
+    ws.onopen = function(){
+      $message.attr("class", 'label label-success');
+      $message.text('Verbunden');
+    };
+    ws.onmessage = function(ev){
+      var json = JSON.parse(ev.data);
+      $clock.attr("class", 'label label-info');
+      $('#clock').text(json.value);
+
+    };
+    ws.onclose = function(ev){
+      $message.attr("class", 'label label-important');
+      $message.text('Verbindung geschlossen');
+    };
+    ws.onerror = function(ev){
+      $message.attr("class", 'label label-warning');
+      $message.text('Fehler!');
+    };
+
+  </script>
+</body>
+</html>

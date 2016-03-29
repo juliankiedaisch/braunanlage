@@ -1,0 +1,21 @@
+  var ws = new WebSocket('ws://192.168.178.39:8888/ws');
+    var $message = $('#message');
+    var $clock = $('#clock');
+    ws.onopen = function(){
+      $message.attr("class", 'label label-success');
+      $message.text('Verbunden');
+    };
+    ws.onmessage = function(ev){
+      var json = JSON.parse(ev.data);
+      $clock.attr("class", 'label label-info');
+      $('#clock').text(json.value);
+
+    };
+    ws.onclose = function(ev){
+      $message.attr("class", 'label label-important');
+      $message.text('Verbindung geschlossen');
+    };
+    ws.onerror = function(ev){
+      $message.attr("class", 'label label-warning');
+      $message.text('Fehler!');
+    };
