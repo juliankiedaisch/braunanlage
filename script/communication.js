@@ -1,4 +1,4 @@
-  var ws = new WebSocket('ws://192.168.178.39:8888/ws');
+  var ws = new WebSocket('ws://127.0.0.1:8888/ws');
     var $message = $('#message_server');
     var $clock = $('#server_clock');
     var $temp_up = $('#temp_up');

@@ -36,6 +36,8 @@ class SocketHandler(websocket.WebSocketHandler):
 	def open(self):
 		if self not in cl:
 			cl.append(self)
+	def on_message(self, message):
+		print message
 
 	def on_close(self):
 		if self in cl:
