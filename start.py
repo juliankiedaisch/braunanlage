@@ -2,13 +2,13 @@ from tornado import websocket, web, ioloop
 import json
 import time
 import thread
-from python import temp_sens
+from python import temp_sens, engine
 cl = []
 
 #Verknuepfen von Datavalue zu Datalist
 class data_communication():
 	#Definition von Datalist:
-	datavalue = ["server_clock", "temp_up", "temp_down", "power"]
+	datavalue = ["server_clock", "temp_up", "temp_down", "power", "engine1"]
 	datalist = [0 for x in range(len(datavalue))]
 
 	# Json Kommunikation
@@ -36,8 +36,19 @@ class SocketHandler(websocket.WebSocketHandler):
 	def open(self):
 		if self not in cl:
 			cl.append(self)
+	#Message from Client Handler
 	def on_message(self, message):
-		print message
+		key = message[0];
+		if key == "beertyps":
+			print message[1];
+		elif key == "engine":
+			a = message[1][0]
+			b = message[1][1]
+			c = message[1][2]
+			if b == 1:
+				engine[a].warm_up(c)
+			else:
+				engine[a].cool_down(c)
 
 	def on_close(self):
 		if self in cl:
@@ -84,6 +95,9 @@ if __name__ == '__main__':
 	#Temperatur auslesen
 	up = temp_sens.sensor(communication_class,"temp_up","500000071D4C0328")
 	down = temp_sens.sensor(communication_class,"temp_down","570000071CE8A828")
+	#Motor 1
+	engine[0] = engine.engine([22,23,24,25], communication_class)
+	communication_class.data_input("engine1", engine[0].get_engine_position())
 	thread.start_new_thread(up.get_temp, (),)
 	thread.start_new_thread(down.get_temp, (),)
 	ioloop.IOLoop.instance().start()
