@@ -46,9 +46,9 @@ class SocketHandler(websocket.WebSocketHandler):
 			b = message[1][1]
 			c = message[1][2]
 			if b == 1:
-				engine[a].warm_up(c)
+				engine_list[a].warm_up(c)
 			else:
-				engine[a].cool_down(c)
+				engine_list[a].cool_down(c)
 
 	def on_close(self):
 		if self in cl:
@@ -97,8 +97,8 @@ if __name__ == '__main__':
 	down = temp_sens.sensor(communication_class,"temp_down","570000071CE8A828")
 	#Motor 1
 	position = [22,23,24,25]
-	engine[0] = engine.engine(position, communication_class)
-	communication_class.data_input("engine1", engine[0].get_engine_position())
+	engine_list[0] = engine.engine(position, communication_class)
+	communication_class.data_input("engine1", engine_list[0].get_engine_position)
 	thread.start_new_thread(up.get_temp, (),)
 	thread.start_new_thread(down.get_temp, (),)
 	ioloop.IOLoop.instance().start()
