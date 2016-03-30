@@ -87,7 +87,7 @@
 					</section>
 
 				<!-- Two -->
-					<section id="laeutern" class="wrapper style3 fade-up">
+					<section id="laeutern" class="wrapper style4 fade-up">
 						<div class="inner">
 							<form method="post" action="#">
 								<h2>Neues Rezept</h2>
@@ -100,23 +100,35 @@
 												<li><select name="demo-category" id="select_biertypen1">
 														<option value="" disabled selected hidden>ausw&auml;hlen</option>
 													</select></li>
-												<li><a href="#section_biertyp" id="button_biertyp1" class="button">Neu</a></li>
+												<li><a href="#section_biertyp" id="button_biertyp1" class="button small">Neu</a></li>
 											</ul>
 											<ul class="actions">
 												<li>Name:</li>
 												<li><input type="text" name="biername" id="biername" placeholder="Name des Biers" /></li>
 											</ul>
 											<h3>Maischen</h3>
-											<ul class="actions">
-											<li>Maischzeiten:</li>
-											<li><select name="maischzeit" id="select_maischzeit" size=5>
-													<option value="">ausw&auml;hlen</option>
-													<option value="">ausw&auml;hlen</option>
-													<option value="">ausw&auml;hlen</option>
-												</select></li>
-												<li><a href="#section_biertyp" id="button_maischzeit" class="button">Neu</a></li>
+											<div id="liste_maischzeit" style="background-color:green; opacity:0.8; color: white;"></div>
+												<ul class="actions">
+												<li><a href="#section_biertyp" id="button_maischzeit" class="button small">Maischphasen</a></li>
 											</ul>
-										</div>
+											<h3>L&auml;utern</h3>
+											<ul class="actions">
+												<li>Nachguss: </li>
+												<li><input type="number" name="nachguss" id="nachguss" style="width:80px;" placeholder="°C" /></li>
+											</ul>
+											<h3>Kochen und Hopfenbeigabe</h3>
+											<ul class="actions">
+												<li>Kochzeit: </li>
+												<li><input type="number" name="kochzeit" id="kochzeit" style="width:80px;" placeholder="min" /></li>
+											</ul>
+											<div id="liste_hopfen" style="background-color:green; opacity:0.8; color: white;"></div>
+												<ul class="actions">
+												<li><a href="#section_biertyp" id="button_hopfen" class="button small">Hopfenbeigabe</a></li>
+											</ul>
+											<ul class="actions">
+											<li><a href="#section_biertyp" id="rezept_speichern" style="background-color:green; opacity:0.8;color:white" class="button">Rezept Speichern</a></li>
+										</ul>
+									</div>
 									</section>
 									<section>
 										<div id="div_biertyp2" style="display:none;">
@@ -132,16 +144,30 @@
 										</div>
 										<div id="div_maischzeit" style="display:none;">
 											<h3>Maischen bearbeiten</h3>
-											<ul class="actions" id="ul_maischzeit">
+											<ul class="actions">
 												<li>Neue Maischzeiten:</li>
 												<li><a href="#section_biertyp" id="button_neu_maischzeit" class="button">+</a></li>
 													<li><a href="#section_biertyp" id="button_weg_maischzeit" class="button">-</a></li>
 											</ul>
 											<div id="div_inner_maischzeit">
 											</div>
-											<ul class="actions" id="ul_neu_maischzeit">
+											<ul class="actions">
 												<li><a href="#section_biertyp" id="button_maischzeit2" class="button">Speichern</a></li>
 												<li><a href="#section_biertyp" id="button_maischzeit3" class="button">Abbrechen</a></li>
+											</ul>
+										</div>
+										<div id="div_hopfen" style="display:none;">
+											<h3>Hopfen hinzugeben</h3>
+											<ul class="actions">
+												<li>Neuer Hopfen:</li>
+												<li><a href="#section_biertyp" id="button_neu_hopfen" class="button">+</a></li>
+													<li><a href="#section_biertyp" id="button_weg_hopfen" class="button">-</a></li>
+											</ul>
+											<div id="div_inner_hopfen">
+											</div>
+											<ul class="actions">
+												<li><a href="#section_biertyp" id="button_hopfen2" class="button">Speichern</a></li>
+												<li><a href="#section_biertyp" id="button_hopfen3" class="button">Abbrechen</a></li>
 											</ul>
 										</div>
 									</section>
