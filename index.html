@@ -100,8 +100,21 @@
 												<li><select name="demo-category" id="select_biertypen1">
 														<option value="" disabled selected hidden>ausw&auml;hlen</option>
 													</select></li>
-												<li><span id="biertyp_message"></span></li>
 												<li><a href="#section_biertyp" id="button_biertyp1" class="button">Neu</a></li>
+											</ul>
+											<ul class="actions">
+												<li>Name:</li>
+												<li><input type="text" name="biername" id="biername" placeholder="Name des Biers" /></li>
+											</ul>
+											<h3>Maischen</h3>
+											<ul class="actions">
+											<li>Maischzeiten:</li>
+											<li><select name="maischzeit" id="select_maischzeit" size=5>
+													<option value="">ausw&auml;hlen</option>
+													<option value="">ausw&auml;hlen</option>
+													<option value="">ausw&auml;hlen</option>
+												</select></li>
+												<li><a href="#section_biertyp" id="button_maischzeit" class="button">Neu</a></li>
 											</ul>
 										</div>
 									</section>
@@ -115,6 +128,20 @@
 											<ul class="actions">
 												<li><a href="#section_biertyp" id="button_biertyp2" class="button">Speichern</a></li>
 												<li><a href="#section_biertyp" id="button_biertyp3" class="button">Abbrechen</a></li>
+											</ul>
+										</div>
+										<div id="div_maischzeit" style="display:none;">
+											<h3>Maischen bearbeiten</h3>
+											<ul class="actions" id="ul_maischzeit">
+												<li>Neue Maischzeiten:</li>
+												<li><a href="#section_biertyp" id="button_neu_maischzeit" class="button">+</a></li>
+													<li><a href="#section_biertyp" id="button_weg_maischzeit" class="button">-</a></li>
+											</ul>
+											<div id="div_inner_maischzeit">
+											</div>
+											<ul class="actions" id="ul_neu_maischzeit">
+												<li><a href="#section_biertyp" id="button_maischzeit2" class="button">Speichern</a></li>
+												<li><a href="#section_biertyp" id="button_maischzeit3" class="button">Abbrechen</a></li>
 											</ul>
 										</div>
 									</section>

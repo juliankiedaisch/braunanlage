@@ -1,5 +1,6 @@
 var mySelect = $('#select_biertypen1');
 var myOptions = ['Pils', 'Weizen', 'Brown Ale'];
+var counter = 0;
 
 /* Biertypen bearbeiten einblenden */
 $('#button_biertyp1').click(function () {
@@ -25,6 +26,35 @@ $('#button_biertyp3').click(function () {
 
 });
 
+/* Maischzeiten bearbeiten einblenden */
+$('#button_maischzeit').click(function () {
+		$('#div_maischzeit').show("slow");
+		$('#div_biertyp1').hide("slow");
+});
+
+/*Maischzeiten bearbeiten ausblenden (Abbrechen) */
+$('#button_maischzeit3').click(function () {
+		$('#div_biertyp1').show("slow");
+		$('#div_maischzeit').hide("slow");
+		for (i= 0; i<counter; i++) {
+			$('#div_inner_maischzeit ul').get(0).remove();
+		}
+		counter = 0;
+});
+
+/* Neue Maischzeit hinzufuegen */
+$('#button_neu_maischzeit').click(function () {
+		$('#div_inner_maischzeit').append('<ul class="actions"><li>'+ (counter + 1) + '. Phase:</li><li><input type="text" style="width:80px;" name="maischzeit_zeit[' + counter +']" id="maischzeit_zeit[' + counter +']" placeholder="min" /></li><li><input type="text" style="width:80px;" name="maischzeit_temp[' + counter +']" id="maischzeit_temp[' + counter +']" placeholder="°C" /></li></ul>');
+		counter++;
+});
+/* Neue Maischzeit entfernen */
+$('#button_weg_maischzeit').click(function () {
+		if (counter >= 1) {
+			counter--;
+			$('#div_inner_maischzeit ul').get(counter).remove();
+	}
+
+});
 /* Option hinzufuegen */
 
 
