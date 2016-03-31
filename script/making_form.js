@@ -4,6 +4,20 @@ var counter = 0;
 var NeuesRezept = [];
 var Maischphasen = [];
 var Hopfenbeigabe = [];
+/* NEUES REZEPT: DIV Maischliste einblenden */
+$('#liste_maischzeit').bind("DOMSubtreeModified",function(){
+  if ($(this).is(':empty')) {
+		$(this).css("display", "none");
+	}
+	else { $(this).css("display", "block");}
+});
+/* NEUES REZEPT: DIV Hopfenliste einblenden */
+$('#liste_hopfen').bind("DOMSubtreeModified",function(){
+  if ($(this).is(':empty')) {
+		$(this).css("display", "none");
+	}
+	else { $(this).css("display", "block");}
+});
 /* NEUES REZEPT: Biertyp auswaehlen */
 $('#select_biertypen1').change(function () {
 		NeuesRezept[0] = $(this).val();
@@ -147,7 +161,7 @@ $('#button_neu_maischzeit').click(function () {
 });
 /*NEUES REZEPT:  Neue Hopfenbeigabe hinzufuegen */
 $('#button_neu_hopfen').click(function () {
-		$('#div_inner_hopfen').append('<ul class="actions"><li>'+ (counter + 1) + '. Hopfengabe:</li><li><input type="number" min=0 max=400 style="width:80px;" name="hopfen_zeit[' + counter +']" id="hopfen_zeit[' + counter +']" placeholder="min" /></li><li><input type="text" style="width:80px;" name="hopfen_name[' + counter +']" id="hopfen_name[' + counter +']" placeholder="Name" /></li></ul>');
+		$('#div_inner_hopfen').append('<ul class="actions"><li>'+ (counter + 1) + '. Hopfengabe:</li><li><input type="number" min=0 max=400 style="width:80px;" name="hopfen_zeit[' + counter +']" id="hopfen_zeit[' + counter +']" placeholder="min" /></li><li><input type="text" style="width:120px;" name="hopfen_name[' + counter +']" id="hopfen_name[' + counter +']" placeholder="Name" /></li></ul>');
 		counter++;
 });
 /*NEUES REZEPT:  Neue Maischzeit entfernen */
@@ -170,16 +184,51 @@ $.each(myOptions, function(val, text) {
         $('<option></option>').val(text).html(text)
     );
 });
-/* Schrittmotor */
+/* SCHRITTMOTOR KONFIGURIEREN: DIV Einblenden */
+
+$('#engine_conf').click(function () {
+		$('#div_schrittmotor2').show("slow");
+		$('#div_schrittmotor1').hide("slow");
+});
+/* SCHRITTMOTOR KONFIGURIEREN: Engine1: Ausstellung: einmal positiv drehen */
+$('#button_schrittmotor1_1').click(function () {
+  var data = new Array();
+  data[0] = "engine";
+  data[1] = [0, 1, 1];
+  ws.send(JSON.stringify(data));
+});
+/* SCHRITTMOTOR KONFIGURIEREN: Engine1: AUsstellung: einmal negativ drehen */
+$('#button_schrittmotor1_2').click(function () {
+  var data = new Array();
+  data[0] = "engine";
+  data[1] = [0, 0, 1];
+  ws.send(JSON.stringify(data));
+});
+/* SCHRITTMOTOR KONFIGURIEREN: Engine1: Maximalstellung: einmal positiv drehen */
+$('#button_schrittmotor1_3').click(function () {
+  var data = new Array();
+  data[0] = "engine";
+  data[1] = [0, 1, 1];
+  ws.send(JSON.stringify(data));
+});
+/* SCHRITTMOTOR KONFIGURIEREN: Engine1: Maximalstellung: einmal negativ drehen */
+$('#button_schrittmotor1_4').click(function () {
+  var data = new Array();
+  data[0] = "engine";
+  data[1] = [0, 0, 1];
+  ws.send(JSON.stringify(data));
+});
+/* Schrittmotor einmal positiv drehen*/
 $('#engine1_up').click(function () {
   var data = new Array();
   data[0] = "engine";
   data[1] = [0, 1, 512];
   ws.send(JSON.stringify(data));
 });
+/* Schrittmotor einmal negativ drehen*/
 $('#engine1_down').click(function () {
   var data = new Array();
   data[0] = "engine";
-  data[1] = [0, 0, 512];
+  data[1] = [0, 0, 256];
   ws.send(JSON.stringify(data));
 });

@@ -11,6 +11,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<!--[if lte IE 8]><script src="template/assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="template/assets/css/main.css" />
+		<link rel="stylesheet" href="noty/demo/buttons.css" />
 
 		<!--[if lte IE 9]><link rel="stylesheet" href="template/assets/css/ie9.css" /><![endif]-->
 		<!--[if lte IE 8]><link rel="stylesheet" href="template/assets/css/ie8.css" /><![endif]-->
@@ -35,6 +36,8 @@
 		<!-- Wrapper -->
 			<div id="wrapper">
 
+				<!--  Div fuer Alarmsound    -->
+				<div id="alarmsound"></div>
 				<!-- Intro -->
 					<section id="start" class="wrapper style1 fullscreen fade-up">
 						<div class="inner">
@@ -43,6 +46,45 @@
 							<p>Temperatur : <span id="temp_up"></span> : <span id="temp_down"></span></p>
 							<p>Heizkörperstellung : <span id="engine1"></span> : <span id="engine2"></span></p>
 							<p>Drehregler : <a href="#" id="engine1_up" class="button">LOS</a> : <a href="#" id="engine1_down" class="button">STOP</a> </p>
+						</div>
+						<div class="inner">
+							<div id="div_schrittmotor1">
+								<a href="#" id="engine_conf" class="button">Schrittmotor konfigurieren</a>
+							</div>
+							<div id="div_schrittmotor2" style="display:none;">
+								<div class="features">
+									<section>
+										<h1>Schrittmotor 1</h1>
+										<ul class="actions">
+											<li>Ausstellungen:</li>
+											<li><a id="button_schrittmotor1_1" class="button">+</a></li>
+											<li><a id="button_schrittmotor1_2" class="button">-</a></li>
+										</ul>
+										<ul class="actions">
+											<li>Maximalstellung:</li>
+											<li><a id="button_schrittmotor1_3" class="button">+</a></li>
+											<li><a id="button_schrittmotor1_4" class="button">-</a></li>
+										</ul>
+									</section>
+									<section>
+										<h1>Schrittmotor 2</h1>
+										<ul class="actions">
+											<li>Ausstellungen:</li>
+											<li><a id="button_schrittmotor2_1" class="button">+</a></li>
+											<li><a id="button_schrittmotor2_2" class="button">-</a></li>
+										</ul>
+										<ul class="actions">
+											<li>Maximalstellung:</li>
+											<li><a id="button_schrittmotor2_3" class="button">+</a></li>
+											<li><a id="button_schrittmotor2_4" class="button">-</a></li>
+										</ul>
+									</section>
+								</div>
+									<ul class="actions">
+										<li><a href="#div_schrittmotor2" id="button_schrittmotor2" style="background-color:green; opacity:0.8;color:white" class="button">Einstellung Speichern</a></li>
+										<li><a href="#div_schrittmotor2" id="button_schrittmotor3" class="button">Abbrechen</a></li>
+									</ul>
+							</div>
 						</div>
 					</section>
 
@@ -107,7 +149,7 @@
 												<li><input type="text" name="biername" id="biername" placeholder="Name des Biers" /></li>
 											</ul>
 											<h3>Maischen</h3>
-											<div id="liste_maischzeit" style="background-color:green; opacity:0.8; color: white;"></div>
+											<div id="liste_maischzeit" style="background-color:green; opacity:0.8; color: white; display:none; padding:10px;border-radius: 8px"></div>
 												<ul class="actions">
 												<li><a href="#section_biertyp" id="button_maischzeit" class="button small">Maischphasen</a></li>
 											</ul>
@@ -121,7 +163,7 @@
 												<li>Kochzeit: </li>
 												<li><input type="number" name="kochzeit" id="kochzeit" style="width:80px;" placeholder="min" /></li>
 											</ul>
-											<div id="liste_hopfen" style="background-color:green; opacity:0.8; color: white;"></div>
+											<div id="liste_hopfen" style="background-color:green; opacity:0.8; color: white; display:none; padding:10px;border-radius: 8px"></div>
 												<ul class="actions">
 												<li><a href="#section_biertyp" id="button_hopfen" class="button small">Hopfenbeigabe</a></li>
 											</ul>
@@ -255,6 +297,7 @@
 			<script src="template/assets/js/jquery.scrolly.min.js"></script>
 			<script src="template/assets/js/skel.min.js"></script>
 			<script src="template/assets/js/util.js"></script>
+			<script src="noty/js/noty/packaged/jquery.noty.packaged.js"></script>
 			<!--[if lte IE 8]><script src="template/assets/js/ie/respond.min.js"></script><![endif]-->
 			<script src="template/assets/js/main.js"></script>
 		<script src="script/communication.js"></script>
