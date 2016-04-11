@@ -7,9 +7,9 @@ class kochen():
         self.sensors = sensors
         self.dc = dc
     def kallibrieren(self):
-        #Hier werden die Werte für 30, 40, 50, 60, 70, 80, 90 und 99 Grad ermittelt.
-        #Dabei wird die Testfluessigkeit immer maximal erhitzt und dann wird die Einstellung versucht zu ermitteln,
-        #um die Temperatur zu halten
+        # Hier werden die Temperaturen ermittelt.
+        # Dabei wird die Testfluessigkeit immer maximal erhitzt und dann wird die Einstellung versucht zu ermitteln,
+        # um die Temperatur zu halten
         test_temps = [30, 40, 50, 60, 70, 80, 90, 99]
         #Hier werden die ermittelten Daten eingetragen
         daten = []
