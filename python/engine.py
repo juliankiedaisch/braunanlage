@@ -49,6 +49,7 @@ class engine ():
         #Relative Aenderung
         if p_type==0:
             new = int(old) + int(position)
+            print "%s:%s:%s" % (self.min_position, new, self.max_position)
             #Ist die Aenderung innerhalb der erlaubten Parametern?
             if (new<self.max_position and new>self.min_position):
                 sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
@@ -75,7 +76,7 @@ class engine ():
             sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
             self.db.sql_command(sql)
             self.dc.data_input( "engine1_min", self.get_engine_position())
-            self.engine1_min = new
+            self.min_position = new
             self.roll_engine(old, new)
     	#max_position
         elif max_min==1:
@@ -84,7 +85,7 @@ class engine ():
             sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
             self.db.sql_command(sql)
             self.dc.data_input( "engine1_max", self.get_engine_position())
-            self.engine1_max = new
+            self.max_position = new
             self.roll_engine(old, new)
     #GPIOS werden auf Grundeinstellung aktiviert
     def start_GPIOS(self):
