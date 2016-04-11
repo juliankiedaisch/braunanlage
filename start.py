@@ -43,10 +43,21 @@ class SocketHandler(websocket.WebSocketHandler):
 		if key == "beertyps":
 			print message[1];
 		if key == "engine":
+			#ID des Schrittmotors
 			a = message[1][0]
+			#Einfach nur drehen oder Parameter anpassen
 			b = message[1][1]
+			#Anzahl der zu gehenden Schritte
 			c = message[1][2]
-			engine_list[a].set_engine_position(c,0)
+			#Schritte relativ oder absolut (bei einfach drehen)
+			#Max oder Min bei Einstellung der Parameter
+			d = message[1][3]
+			#Parameter KONFIGURIEREN
+			if b==1:
+				engine_list[a].set_engine_parameter(c,d)
+			#Motor mit uebergebener Anzahl von Schritten drehen lassen
+			elif b==0:
+				engine_list[a].set_engine_position(c,d)
 
 	def on_close(self):
 		if self in cl:

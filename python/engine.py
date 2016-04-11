@@ -36,7 +36,7 @@ class engine ():
         sql = "SELECT current_position FROM engines WHERE id='%s'" % self.id
         self.db.sql_command(sql)
         return self.db.sql_return()[0]
-	#Ueberpruefen, ob der Motor schon eingetragen ist
+	#Motor drehen lassen
 	#p_type=0: Relative Aenderung der Position
 	#p_type=1: Absolute Aenderung der Position
     def set_engine_position(self, position, p_type):
@@ -58,6 +58,22 @@ class engine ():
                 sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
                 self.db.sql_command(sql)
                 self.roll_engine(old, new)
+
+    def set_engine_parameter(self, position, max_min):
+        #Aktuelle Position des Motors wird ermittelt
+        old = self.get_engine_position()
+        #Neue Position wird errechnet
+        new = int(old) + int(position)
+        #min_position
+        if max_min==0:
+            sql = "UPDATE engines SET min_position='%s' WHERE id = '%s'" % (new, self.id)
+            self.db.sql_command(sql)
+            self.roll_engine(old, new)
+    	#max_position
+        elif max_min==1:
+            sql = "UPDATE engines SET max_position='%s' WHERE id = '%s'" % (new, self.id)
+            self.db.sql_command(sql)
+            self.roll_engine(old, new)
     #GPIOS werden auf Grundeinstellung aktiviert
     def start_GPIOS(self):
         GPIO.setmode(GPIO.BCM)
