@@ -2,7 +2,7 @@ from time import sleep
 import RPi.GPIO as GPIO
 from python import database
 
-class engine(database):
+class engine ():
     def __init__(self, gpios, engine, dc):
         #Datenbank fuer die motorsteuerung
         self.engine_db = "engine.db"
@@ -18,23 +18,24 @@ class engine(database):
         self.D = gpios[3]
         self.time = 0.002
         self.dc = dc
-        self.db = database.__init__(self, self.engine_db)
+        self.db = database.database(self.engine_db)
 		#Tables werden erstellt, falls sie noch nicht existiert:
         sql = "CREATE TABLE IF NOT EXISTS engines (id INTEGER PRIMARY KEY, name TEXT, current_position INTEGER, max_position INTEGER, min_position INTEGER)"
-        database.sql_command(self, sql)
+        self.db.sql_command(sql)
 		#Der Motor wird eingetragen, falls er noch nicht existiert
         sql = "INSERT INTO engines (name,current_position, max_position, min_position) SELECT '%s', '%s', 0, 0 WHERE NOT EXISTS(SELECT 1 FROM engines WHERE name = '%s')" % (self.engine, 0, self.engine)
-        database.sql_command(self, sql)
+        self.db.sql_command(sql)
 		#ID des Motors wird abgefragt
         sql = "SELECT id, min_position, max_position FROM engines WHERE name='%s'" % self.engine
-        database.sql_command(self, sql)
-        self.id = database.sql_return(self)[0]
-        self.min_position = database.sql_return(self)[1]
-        self.max_position = database.sql_return(self)[2]
+        self.db.sql_command(sql)
+        fetch = self.db.sql_return()
+        self.id = fetch[0]
+        self.min_position = fetch[1]
+        self.max_position = fetch[2]
     def get_engine_position(self):
         sql = "SELECT current_position FROM engines WHERE id='%s'" % self.id
-        database.sql_command(self, sql)
-        return database.sql_return(self)[0]
+        self.db.sql_command(sql)
+        return self.db.sql_return()[0]
 	#Ueberpruefen, ob der Motor schon eingetragen ist
 	#p_type=0: Relative Aenderung der Position
 	#p_type=1: Absolute Aenderung der Position
@@ -47,13 +48,13 @@ class engine(database):
             if p_type==0:
                 new = int(old) + int(position)
                 sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
-                database.sql_command(self, sql)
+                self.db.sql_command(sql)
                 self.roll_engine(old, new)
     		#Absolute Aenderung
             elif p_type==1:
                 new = int(position)
                 sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
-                database.sql_command(self, sql)
+                self.db.sql_command(sql)
                 self.roll_engine(old, new)
     #GPIOS werden auf Grundeinstellung aktiviert
     def start_GPIOS(self):
