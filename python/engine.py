@@ -26,16 +26,15 @@ class engine ():
         sql = "INSERT INTO engines (name,current_position, max_position, min_position) SELECT '%s', '%s', 0, 0 WHERE NOT EXISTS(SELECT 1 FROM engines WHERE name = '%s')" % (self.name, 0, self.name)
         self.db.sql_command(sql)
 		#ID des Motors wird abgefragt
-        sql = "SELECT id, min_position, max_position FROM engines WHERE name='%s'" % self.name
+        sql = "SELECT id, min_position, max_position, current_position FROM engines WHERE name='%s'" % self.name
         self.db.sql_command(sql)
         fetch = self.db.sql_return()
         self.id = fetch[0]
         self.min_position = fetch[1]
         self.max_position = fetch[2]
+        self.current_position = fetch[3]
     def get_engine_position(self):
-        sql = "SELECT current_position FROM engines WHERE id='%s'" % self.id
-        self.db.sql_command(sql)
-        return self.db.sql_return()[0]
+        return self.current_position
     def get_engine_position_max(self):
         return self.max_position
     def get_engine_position_min(self):
@@ -49,11 +48,11 @@ class engine ():
         #Relative Aenderung
         if p_type==0:
             new = int(old) + int(position)
-            print "%s:%s:%s" % (self.min_position, new, self.max_position)
             #Ist die Aenderung innerhalb der erlaubten Parametern?
             if (new<self.max_position and new>self.min_position):
                 sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
                 self.db.sql_command(sql)
+                self.current_position = new
                 self.roll_engine(old, new)
     	#Absolute Aenderung
         elif p_type==1:
@@ -62,6 +61,7 @@ class engine ():
             if (new<self.max_position and new>self.min_position):
                 sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
                 self.db.sql_command(sql)
+                self.current_position = new
                 self.roll_engine(old, new)
 
     def set_engine_parameter(self, position, max_min):
@@ -77,6 +77,7 @@ class engine ():
             self.db.sql_command(sql)
             self.dc.data_input( "engine1_min", self.get_engine_position())
             self.min_position = new
+            self.current_position = new
             self.roll_engine(old, new)
     	#max_position
         elif max_min==1:
@@ -86,8 +87,20 @@ class engine ():
             self.db.sql_command(sql)
             self.dc.data_input( "engine1_max", self.get_engine_position())
             self.max_position = new
+            self.current_position = new
             self.roll_engine(old, new)
     #GPIOS werden auf Grundeinstellung aktiviert
+
+    def engine_out(self):
+        new = self.get_engine_position_min
+        old = self.get_engine_position
+        self.roll_engine(old, new)
+
+    def engine_on(self):
+        new = self.get_engine_position_max
+        old = self.get_engine_position
+        self.roll_engine(old, new)
+
     def start_GPIOS(self):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.A,GPIO.OUT)
