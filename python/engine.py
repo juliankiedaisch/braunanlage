@@ -40,19 +40,21 @@ class engine ():
 	#p_type=0: Relative Aenderung der Position
 	#p_type=1: Absolute Aenderung der Position
     def set_engine_position(self, position, p_type):
-        #Ist die Aenderung innerhalb der erlaubten Parametern?
-        if (new<self.max_position and new>self.min_position):
-            #Aktuelle Position des Motors wird ermittelt
-            old = self.get_engine_position()
-            #Relative Aenderung
-            if p_type==0:
-                new = int(old) + int(position)
+        #Aktuelle Position des Motors wird ermittelt
+        old = self.get_engine_position()
+        #Relative Aenderung
+        if p_type==0:
+            new = int(old) + int(position)
+            #Ist die Aenderung innerhalb der erlaubten Parametern?
+            if (new<self.max_position and new>self.min_position):
                 sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
                 self.db.sql_command(sql)
                 self.roll_engine(old, new)
-    		#Absolute Aenderung
-            elif p_type==1:
-                new = int(position)
+    	#Absolute Aenderung
+        elif p_type==1:
+            new = int(position)
+            #Ist die Aenderung innerhalb der erlaubten Parametern?
+            if (new<self.max_position and new>self.min_position):
                 sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
                 self.db.sql_command(sql)
                 self.roll_engine(old, new)
