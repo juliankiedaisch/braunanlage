@@ -92,13 +92,13 @@ class engine ():
     #GPIOS werden auf Grundeinstellung aktiviert
 
     def engine_out(self):
-        new = self.get_engine_position_min
-        old = self.get_engine_position
+        new = self.min_position
+        old = self.current_position
         self.roll_engine(old, new)
 
     def engine_on(self):
-        new = self.get_engine_position_max
-        old = self.get_engine_position
+        new = self.max_position
+        old = self.current_position
         self.roll_engine(old, new)
 
     def start_GPIOS(self):
