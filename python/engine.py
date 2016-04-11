@@ -127,7 +127,7 @@ class engine ():
         GPIO.output(self.D, False)
         GPIO.output(self.A, False)
     def roll_engine(self, old, new):
-        schritte = distance(old, new)
+        schritte = abs(old, new)
         #old<new
         if new>old:
             self.start_GPIOS()
@@ -140,7 +140,6 @@ class engine ():
                 self.Step6()
                 self.Step7()
                 self.Step8()
-                self.engine_position += 1
                 self.dc.data_input( self.name, self.get_engine_position())
             GPIO.cleanup()
         elif new>old:
@@ -154,6 +153,5 @@ class engine ():
                 self.Step3()
                 self.Step2()
                 self.Step1()
-                self.engine_position -= 1
                 self.dc.data_input( self.name, self.get_engine_position())
             GPIO.cleanup()
