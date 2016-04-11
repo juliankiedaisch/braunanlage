@@ -127,7 +127,7 @@ class engine ():
         GPIO.output(self.D, False)
         GPIO.output(self.A, False)
     def roll_engine(self, old, new):
-        schritte = abs(old, new)
+        schritte = abs(int(old) - int(new))
         #old<new
         if new>old:
             self.start_GPIOS()
