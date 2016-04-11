@@ -146,7 +146,7 @@ class engine ():
                 self.Step8()
                 self.dc.data_input( self.name, self.get_engine_position())
             GPIO.cleanup()
-        elif new>old:
+        elif new<old:
             self.start_GPIOS()
             for i in range (schritte):
                 self.Step8()
