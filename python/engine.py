@@ -36,6 +36,10 @@ class engine ():
         sql = "SELECT current_position FROM engines WHERE id='%s'" % self.id
         self.db.sql_command(sql)
         return self.db.sql_return()[0]
+    def get_engine_position_max(self):
+        return self.max_position
+    def get_engine_position(self):
+        return self.min_position
 	#Motor drehen lassen
 	#p_type=0: Relative Aenderung der Position
 	#p_type=1: Absolute Aenderung der Position
@@ -71,6 +75,7 @@ class engine ():
             sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
             self.db.sql_command(sql)
             self.dc.data_input( "engine1_min", self.get_engine_position())
+            self.engine1_min = new
             self.roll_engine(old, new)
     	#max_position
         elif max_min==1:
@@ -79,6 +84,7 @@ class engine ():
             sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
             self.db.sql_command(sql)
             self.dc.data_input( "engine1_max", self.get_engine_position())
+            self.engine1_max = new
             self.roll_engine(old, new)
     #GPIOS werden auf Grundeinstellung aktiviert
     def start_GPIOS(self):

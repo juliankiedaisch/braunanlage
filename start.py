@@ -108,7 +108,12 @@ if __name__ == '__main__':
 	gpios1 = [22,23,24,25]
 	engine_list = [0 for x in range(2)]
 	engine_list[0] = engine.engine(gpios1, "engine1", communication_class)
+	#Aktuelle Position des Schrittmotors anzeigen
 	communication_class.data_input("engine1", engine_list[0].get_engine_position())
+	#Maximale Position des Schrittmotors anzeigen
+	communication_class.data_input("engine1_max", engine_list[0].get_engine_position_max())
+	#Minimale Position des Schrittmotors anzeigen
+	communication_class.data_input("engine1_min", engine_list[0].get_engine_position_min())
 	thread.start_new_thread(up.get_temp, (),)
 	thread.start_new_thread(down.get_temp, (),)
 	ioloop.IOLoop.instance().start()
