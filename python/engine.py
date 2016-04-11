@@ -38,7 +38,7 @@ class engine ():
         return self.db.sql_return()[0]
     def get_engine_position_max(self):
         return self.max_position
-    def get_engine_position(self):
+    def get_engine_position_min(self):
         return self.min_position
 	#Motor drehen lassen
 	#p_type=0: Relative Aenderung der Position
