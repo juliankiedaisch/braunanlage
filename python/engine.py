@@ -94,11 +94,17 @@ class engine ():
     def engine_out(self):
         new = self.min_position
         old = self.current_position
+        self.current_position = new
+        sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
+        self.db.sql_command(sql)
         self.roll_engine(old, new)
 
     def engine_on(self):
         new = self.max_position
         old = self.current_position
+        self.current_position = new
+        sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
+        self.db.sql_command(sql)
         self.roll_engine(old, new)
 
     def start_GPIOS(self):
