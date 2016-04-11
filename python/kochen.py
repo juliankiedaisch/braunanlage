@@ -37,13 +37,13 @@ class kochen():
                 current_temp = self.get_middle_temp()
                 #Temperatur ist gesunken
                 if (ziel_temp-current_temp)>0.2:
-                    #Vergangene Zeit wird zurückgesetzt
+                    #Vergangene Zeit wird zurueckgesetzt
                     zeit1 = time()
                     self.engines_on_seq()
                     print ("too much")
                 #Temperatur ist gestiegen
                 elif (current_temp-ziel_temp)>0.2:
-                    #Vergangene Zeit wird zurückgesetzt
+                    #Vergangene Zeit wird zurueckgesetzt
                     zeit1 = time()
                     self.engines_out_seq()
                     print ("too less")
