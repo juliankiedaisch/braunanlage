@@ -7,6 +7,8 @@
     var $temp_up = $('#temp_up');
     var $temp_down = $('#temp_down');
     var $engine1_position = $('#engine1');
+    var $engine1_max = $('#engine1_max');
+    var $engine1_min = $('#engine1_min');
     //Hier wird alles ueber den Zustand der WebSocketverbindung gehaendelt
     //In [0] wird angegeben ob die Verbindung steht , 1 = Verbunden, 0 = Nicht verbunden
     //In [1] wird der Fehler benannt
@@ -36,6 +38,8 @@ function open_connection() {
       $temp_up.text(json.temp_up);
       $temp_down.text(json.temp_down);
       $engine1_position.text(json.engine1);
+      $engine1_max.text(json.engine1_max);
+      $engine1_min.text(json.engine1_min);
       //Da der Server die Systemzeit sekuendlich durgibt, benutze ich ein ausbleiben der Nachricht als Zeichen, dass die Verbindung abgebrochen wird.
       ServerConnection = 1;
     };

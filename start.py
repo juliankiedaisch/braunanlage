@@ -8,7 +8,7 @@ cl = []
 #Verknuepfen von Datavalue zu Datalist
 class data_communication():
 	#Definition von Datalist:
-	datavalue = ["server_clock", "temp_up", "temp_down", "power", "engine1"]
+	datavalue = ["server_clock", "temp_up", "temp_down", "power", "engine1", "engine1_max", "engine1_min"]
 	datalist = [0 for x in range(len(datavalue))]
 
 	# Json Kommunikation

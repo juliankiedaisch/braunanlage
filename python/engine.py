@@ -70,6 +70,7 @@ class engine ():
             self.db.sql_command(sql)
             sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
             self.db.sql_command(sql)
+            self.dc.data_input( "engine1_min", self.get_engine_position())
             self.roll_engine(old, new)
     	#max_position
         elif max_min==1:
@@ -77,6 +78,7 @@ class engine ():
             self.db.sql_command(sql)
             sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
             self.db.sql_command(sql)
+            self.dc.data_input( "engine1_max", self.get_engine_position())
             self.roll_engine(old, new)
     #GPIOS werden auf Grundeinstellung aktiviert
     def start_GPIOS(self):
