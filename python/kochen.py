@@ -22,7 +22,7 @@ class kochen():
             #Laeuft solange die Temperatur noch nicht erreicht wurde
             while ziel_temp>current_temp:
                 sleep(10)
-                print "not there yet"
+                print current_temp
                 current_temp = self.get_middle_temp()
             #Alle Motoren werden abgedreht
             self.engines_out_full()
@@ -40,13 +40,13 @@ class kochen():
                     #Vergangene Zeit wird zurueckgesetzt
                     zeit1 = time()
                     self.engines_on_seq()
-                    print ("too much")
+                    print ("too much: ?", current_temp)
                 #Temperatur ist gestiegen
                 elif (current_temp-ziel_temp)>0.2:
                     #Vergangene Zeit wird zurueckgesetzt
                     zeit1 = time()
                     self.engines_out_seq()
-                    print ("too less")
+                    print ("too less: ?", current_temp)
             daten.append(get_engines_position())
             print daten
 #Mittlere Temperatur wird ermittelt
