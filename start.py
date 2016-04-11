@@ -58,6 +58,12 @@ class SocketHandler(websocket.WebSocketHandler):
 			#Motor mit uebergebener Anzahl von Schritten drehen lassen
 			elif b==0:
 				engine_list[a].set_engine_position(c,d)
+			#Voll an und abdrehen
+			elif b==2:
+				if c==1:
+					engine_list[a].engine_on()
+				elif c==0:
+					engine_list[a].engine_out()
 
 	def on_close(self):
 		if self in cl:
