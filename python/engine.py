@@ -6,7 +6,7 @@ class engine ():
     def __init__(self, gpios, engine, dc):
         #Datenbank fuer die motorsteuerung
         self.engine_db = "engine.db"
-        self.engine = engine
+        self.name = engine
         # Verwendete Pins am Rapberry Pi
         #A=22
         #B=23
@@ -23,10 +23,10 @@ class engine ():
         sql = "CREATE TABLE IF NOT EXISTS engines (id INTEGER PRIMARY KEY, name TEXT, current_position INTEGER, max_position INTEGER, min_position INTEGER)"
         self.db.sql_command(sql)
 		#Der Motor wird eingetragen, falls er noch nicht existiert
-        sql = "INSERT INTO engines (name,current_position, max_position, min_position) SELECT '%s', '%s', 0, 0 WHERE NOT EXISTS(SELECT 1 FROM engines WHERE name = '%s')" % (self.engine, 0, self.engine)
+        sql = "INSERT INTO engines (name,current_position, max_position, min_position) SELECT '%s', '%s', 0, 0 WHERE NOT EXISTS(SELECT 1 FROM engines WHERE name = '%s')" % (self.name, 0, self.name)
         self.db.sql_command(sql)
 		#ID des Motors wird abgefragt
-        sql = "SELECT id, min_position, max_position FROM engines WHERE name='%s'" % self.engine
+        sql = "SELECT id, min_position, max_position FROM engines WHERE name='%s'" % self.name
         self.db.sql_command(sql)
         fetch = self.db.sql_return()
         self.id = fetch[0]
