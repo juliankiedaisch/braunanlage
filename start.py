@@ -10,6 +10,7 @@ class data_communication():
 	def __init__(self):
 	#Definition von Datalist:
 		self.data = {}
+		hasattr(self.data, "__dict__")
 	# Json Kommunikation
 	def data_input(self,name,value):
 		setattr(self.data, name, value)
