@@ -10,5 +10,7 @@ class database():
 		self.connection.commit()
 	def sql_return(self):
 		return self.cursor.fetchone()
+	def sql_return_all(self):
+		return self.cursor.fetchall()
 	def __del__(self):
 		self.connection.close()
