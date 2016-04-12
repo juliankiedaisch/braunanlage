@@ -108,8 +108,8 @@ if __name__ == '__main__':
 	#Kommunikation mit Client
 	thread.start_new_thread(communication_class.json_communication, (),)
 	#Temperatur auslesen
-	up = temp_sens.sensor(communication_class,"temp_up","sensors")
-	down = temp_sens.sensor(communication_class,"temp_down","sensors")
+	up = temp_sens.sensor(communication_class,"temp_up","sensors.db")
+	down = temp_sens.sensor(communication_class,"temp_down","sensors.db")
 	#Motor 1
 	gpios1 = [22,23,24,25]
 	engine_list = [0 for x in range(2)]

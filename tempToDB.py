@@ -46,7 +46,7 @@ class sensor(threading.Thread):
             self.db.sql_command(sql)
             time.sleep(1)
 
-up = sensor("temp_up", "500000071D4C0328", "sensors")
-down = sensor("temp_down","570000071CE8A828", "sensors")
+up = sensor("temp_up", "500000071D4C0328", "sensors.db")
+down = sensor("temp_down","570000071CE8A828", "sensors.db")
 up.start()
 down.start()
