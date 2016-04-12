@@ -12,9 +12,9 @@ class data_communication():
 		self.data = {}
 	# Json Kommunikation
 	def data_input(self,name,value):
-		setattr(data, name, value)
+		setattr(self.data, name, value)
 		for c in cl:
-			c.write_message(json.dumps(data))
+			c.write_message(json.dumps(self.data))
 
 
 class IndexHandler(web.RequestHandler):
