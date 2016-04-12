@@ -7,22 +7,15 @@ cl = []
 
 #Verknuepfen von Datavalue zu Datalist
 class data_communication():
+	def __init__(self):
 	#Definition von Datalist:
-	datavalue = ["server_clock", "temp_up", "temp_down", "power", "engine1", "engine1_max", "engine1_min"]
-	datalist = [0 for x in range(len(datavalue))]
-
+		self.data = {}
 	# Json Kommunikation
-	def json_communication(self):
-		data = {}
-		while True:
-			for x in range(0,len(data_communication.datavalue)):
-				data[data_communication.datavalue[x]] = data_communication.datalist[x]
-			for c in cl:
-				c.write_message(json.dumps(data))
-			time.sleep(1)
+	def data_input(self,name,value):
+		setattr(data, name, value)
+		for c in cl:
+			c.write_message(json.dumps(data))
 
-	def data_input(self,data,value):
-		data_communication.datalist[data_communication.datavalue.index(data)] = value
 
 class IndexHandler(web.RequestHandler):
 	def get(self):
@@ -106,7 +99,7 @@ if __name__ == '__main__':
 	#Server Uhr
 	thread.start_new_thread(main_clock, (communication_class,))
 	#Kommunikation mit Client
-	thread.start_new_thread(communication_class.json_communication, (),)
+	#thread.start_new_thread(communication_class.json_communication, (),)
 	#Temperatur auslesen
 	up = temp_sens.sensor(communication_class,"temp_up","sensors.db")
 	down = temp_sens.sensor(communication_class,"temp_down","sensors.db")
