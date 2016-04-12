@@ -68,14 +68,14 @@ class engine ():
             sql = "UPDATE engines SET min_position='%s' WHERE id = '%s'" % (new, self.id)
             self.db.sql_command(sql)
             self.min_position = new
-            self.dc.data_input( "engine1_min", self.get_engine_position())
+            self.dc.data_input( "engine1_min", new)
             self.roll_engine(old, new)
     	#max_position
         elif max_min==1:
             sql = "UPDATE engines SET max_position='%s' WHERE id = '%s'" % (new, self.id)
             self.db.sql_command(sql)
             self.max_position = new
-            self.dc.data_input( "engine1_max", self.get_engine_position())
+            self.dc.data_input( "engine1_max", new)
             self.roll_engine(old, new)
 
     def engine_out(self):

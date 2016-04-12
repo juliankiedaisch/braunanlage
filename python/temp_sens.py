@@ -1,36 +1,27 @@
-import ow
 import time
+import sqlite3
+from python import database
 
 class sensor():
-    #sensor ist die Adresse des Sensors
-    senorlist = []
-    location = "localhost:4304"
-    ow.init(location)
-    def __init__(self, dc, sensor_name, sensor_adr):
-        #Location wird vorgegeben
-
-        #self.temp_sensor_down = "570000071CE8A828"
-        #self.temp_sensor_up = "500000071D4C0328"
-        self.sensor_adr = sensor_adr
+    def __init__(self, dc, sensor_name, db):
         self.sensor_name = sensor_name
         self.dc = dc
         self.temperatur = 0
-        #OW wird initialisiert
-
-    def get_sensor_liste(self):
-        return  ow.Sensor("/").sensorList()
-    def get_sensor(self, sensor, sensorlist):
-        for item in sensorlist[:]:
-            if item.r_address != sensor:
-                sensorlist.remove( item )
-        return sensorlist
+        #Datenbank wird initialisiert
+        self.db = database.database(db)
+        #ID des Sensors wird abgefragt
+        sql = "SELECT id FROM sensors WHERE name='%s'" % self.sensor_name
+        self.db.sql_command(sql)
+        fetch = self.db.sql_return()
+        self.id = fetch[0]
     def get_temp(self):
-        sensor = self.get_sensor(self.sensor_adr, self.get_sensor_liste())
         while True:
-            value = sensor[0].temperature
-            self.temperatur = round(float(value),1)
+            sql = "SELECT temperatur FROM sensors WHERE id='%s'" % self.id
+            self.db.sql_command(sql)
+            fetch = self.db.sql_return()
+            self.temperatur = round(float(fetch[0]),1)
             self.dc.data_input( self.sensor_name, str(round(float(value),1)))
-            time.sleep(2)
+            time.sleep(1)
 
 #up = sensor("500000071D4C0328")
 #down = sensor("570000071CE8A828")
