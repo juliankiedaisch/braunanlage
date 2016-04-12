@@ -32,14 +32,27 @@ function open_connection() {
     };
     ws.onmessage = function(ev){
       var json = JSON.parse(ev.data);
-      //Clock, Temp
-      $clock.attr("class", 'label label-info');
-      $clock.text(json.server_clock);
-      $temp_up.text(json.temp_up);
-      $temp_down.text(json.temp_down);
-      $engine1_position.text(json.engine1);
-      $engine1_max.text(json.engine1_max);
-      $engine1_min.text(json.engine1_min);
+      //Der Inhalt der Message wird an den richtigen empfaenger verteilt
+      switch (json.message[0]) {
+        case "server_clock":
+          $clock.text(json.message[1]);
+          break;
+        case "temp_down":
+          $temp_down.text(json.message[1]);
+          break;
+        case "temp_up":
+          $temp_up.text(json.message[1]);
+          break;
+        case "engine1":
+          $engine1_position.text(json.message[1]);
+          break;
+        case "engine1_max":
+          $engine1_max.text(json.message[1]);
+          break;
+        case "engine1_min":
+          $engine1_min.text(json.message[1]);
+          break;
+      }
       //Da der Server die Systemzeit sekuendlich durgibt, benutze ich ein ausbleiben der Nachricht als Zeichen, dass die Verbindung abgebrochen wird.
       ServerConnection = 1;
     };
