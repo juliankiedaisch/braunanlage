@@ -9,6 +9,7 @@ cl = []
 class data_communication():
 	def __init__(self):
 	# Json Kommunikation
+		self.test = "test"
 	def data_input(self,name,value):
 		data = {"message": [name, value]}
 		for c in cl:
