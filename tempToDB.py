@@ -9,14 +9,14 @@ class sensor(threading.Thread):
     senorlist = []
     location = "localhost:4304"
     ow.init(location)
-    def __init__(self, sensor_name, sensor_adr, database):
+    def __init__(self, sensor_name, sensor_adr, db):
         #Location wird vorgegeben
         #self.temp_sensor_down = "570000071CE8A828"
         #self.temp_sensor_up = "500000071D4C0328"
         self.sensor_adr = sensor_adr
         self.sensor_name = sensor_name
         #Datenbank wird initialisiert
-        self.db = database.database(database)
+        self.db = database.database(db)
 		#Tables werden erstellt, falls sie noch nicht existiert:
         sql = "CREATE TABLE IF NOT EXISTS sensors (id INTEGER PRIMARY KEY, name TEXT, temperatur REAL)"
         self.db.sql_command(sql)
