@@ -2,7 +2,7 @@ from tornado import websocket, web, ioloop
 import json
 import time
 import thread
-from python import temp_sens, engine
+from python import temp_sens, engine, rezept
 cl = []
 
 #Verknuepfen von Datavalue zu Datalist
@@ -32,25 +32,34 @@ class SocketHandler(websocket.WebSocketHandler):
 	def on_message(self, message):
 		message = json.loads(message)
 		key = message[0];
-		if key == "beertyps":
-			print message[1];
-		if key == "engine":
-			#ID des Schrittmotors
+		if key == "b_biertyp":
+		#Was soll gemacht werden. Hinzufuegen=1, Loeschen=0
 			a = message[1][0]
-			#Einfach nur drehen oder Parameter anpassen
+		#ID bei loeschen, name bei hinzufuegen
 			b = message[1][1]
-			#Anzahl der zu gehenden Schritte
+		#Loeschen
+			if a==0:
+				communication_class.data_input("b_biertyp",class_biertyp.delet_biertyp(b))
+		#Hinzufuegen
+			elif a==1:
+				communication_class.data_input("b_biertyp",class_biertyp.add_biertyp(b))
+		if key == "engine":
+		#ID des Schrittmotors
+			a = message[1][0]
+		#Einfach nur drehen oder Parameter anpassen
+			b = message[1][1]
+		#Anzahl der zu gehenden Schritte
 			c = message[1][2]
-			#Schritte relativ oder absolut (bei einfach drehen)
-			#Max oder Min bei Einstellung der Parameter
+		#Schritte relativ oder absolut (bei einfach drehen)
+		#Max oder Min bei Einstellung der Parameter
 			d = message[1][3]
-			#Parameter KONFIGURIEREN
+		#Parameter KONFIGURIEREN
 			if b==1:
 				engine_list[a].set_engine_parameter(c,d)
-			#Motor mit uebergebener Anzahl von Schritten drehen lassen
+		#Motor mit uebergebener Anzahl von Schritten drehen lassen
 			elif b==0:
 				engine_list[a].set_engine_position(c,d)
-			#Voll an und abdrehen
+		#Voll an und abdrehen
 			elif b==2:
 				if c==1:
 					engine_list[a].engine_on()
@@ -87,31 +96,36 @@ app = web.Application([
 	(r'/', IndexHandler),
 	(r'/ws', SocketHandler),
 	(r'/api', ApiHandler),
-	(r'/(favicon.ico)', web.StaticFileHandler, {'path': '../'}),
+	#(r'/(favicon.ico)', web.StaticFileHandler, {'path': '../'}),
 	(r'/(.*)', web.StaticFileHandler, {'path': './'}),
-	(r'/(rest_api_example.png)', web.StaticFileHandler, {'path': './'}),
+	#(r'/(rest_api_example.png)', web.StaticFileHandler, {'path': './'}),
 ])
 
 if __name__ == '__main__':
 	communication_class = data_communication()
 	app.listen(8888)
-	#Server Uhr
+#Server Uhr
 	thread.start_new_thread(main_clock, (communication_class,))
-	#Kommunikation mit Client
-	#thread.start_new_thread(communication_class.json_communication, (),)
-	#Temperatur auslesen
+#Kommunikation mit Client
+#thread.start_new_thread(communication_class.json_communication, (),)
+#Temperatur auslesen
 	up = temp_sens.sensor(communication_class,"temp_up","sensors.db")
 	down = temp_sens.sensor(communication_class,"temp_down","sensors.db")
-	#Motor 1
+#Motor 1
 	gpios1 = [22,23,24,25]
 	engine_list = [0 for x in range(2)]
 	engine_list[0] = engine.engine(gpios1, "engine1", communication_class)
-	#Aktuelle Position des Schrittmotors anzeigen
-	communication_class.data_input("engine1", engine_list[0].get_engine_position())
-	#Maximale Position des Schrittmotors anzeigen
-	communication_class.data_input("engine1_max", engine_list[0].get_engine_position_max())
-	#Minimale Position des Schrittmotors anzeigen
-	communication_class.data_input("engine1_min", engine_list[0].get_engine_position_min())
+#Aktuelle Position des Schrittmotors anzeigen
+	communication_class.data_input("engine1", engine_list[0].current_position)
+#Maximale Position des Schrittmotors anzeigen
+	communication_class.data_input("engine1_max", engine_list[0].max_position)
+#Minimale Position des Schrittmotors anzeigen
+	communication_class.data_input("engine1_min", engine_list[0].min_position)
+#Threads zum Temperaturauslesen werden gestartet
 	thread.start_new_thread(up.get_temp, (),)
 	thread.start_new_thread(down.get_temp, (),)
+#Klasse Biertyp wird initialisiert
+	class_biertyp = rezept.biertyp("rezept.db")
+#Alle Biertypen werden abgerufen und an den Client geschickt
+	communication_class.data_input("b_biertyp", class_biertyp.show_all_biertypen())
 	ioloop.IOLoop.instance().start()
