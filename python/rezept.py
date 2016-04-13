@@ -1,5 +1,6 @@
 from python import database
 import sqlite3
+import time
 
 class biertyp():
     def __init__(self, db):
@@ -7,7 +8,7 @@ class biertyp():
         sql = "CREATE TABLE IF NOT EXISTS biertypen (id INTEGER PRIMARY KEY, name TEXT)"
         self.db.sql_command(sql)
     #Table fuer die Rezepte wird eingerichtet
-        sql = "CREATE TABLE IF NOT EXISTS rezept (id INTEGER PRIMARY KEY, name TEXT, biertyp INTEGER, kochzeit INTEGER, nachguss INTEGER, erstellung INTEGER)"
+        sql = "CREATE TABLE IF NOT EXISTS rezept (id INTEGER PRIMARY KEY, biername TEXT, biertyp INTEGER, kochzeit INTEGER, nachguss INTEGER, erstellung INTEGER)"
         self.db.sql_command(sql)
     def delet_biertyp(self, id):
     #Zuerst wird geschaut, ob der Biertyp noch verwendet wird
@@ -37,7 +38,6 @@ class biertyp():
     def show_all_biertypen(self):
         sql = "SELECT * FROM biertypen"
         self.db.sql_command(sql)
-        a=0
         all_return = self.db.sql_return_all()
         data = []
         for row in all_return:
@@ -53,52 +53,58 @@ class rezept():
     #Verbindung zur Datenbank wird aufgebaut
         self.db = database.database(db)
     #Table fuer die Rezepte wird eingerichtet
-        sql = "CREATE TABLE IF NOT EXISTS rezept (id INTEGER PRIMARY KEY, name TEXT, biertyp INTEGER, kochzeit INTEGER, nachguss INTEGER, erstellung INTEGER)"
+        sql = "CREATE TABLE IF NOT EXISTS rezept (id INTEGER PRIMARY KEY, biername TEXT, biertyp INTEGER, kochzeit INTEGER, nachguss INTEGER, erstellung INTEGER)"
         self.db.sql_command(sql)
     #Table fuer die Maischphasen wird eingerichtet
         sql = "CREATE TABLE IF NOT EXISTS maischphasen (id INTEGER PRIMARY KEY, rezept_id INTEGER, zeit INTEGER, temperatur INTEGER)"
         self.db.sql_command(sql)
     #Table fuer die Hopfenbeigabe wird eingerichtet
-        sql = "CREATE TABLE IF NOT EXISTS hopfenzugabe (id INTEGER PRIMARY KEY, rezept_id INTEGER, zeit INTEGER, name TEXT)"
+        sql = "CREATE TABLE IF NOT EXISTS hopfenbeigabe (id INTEGER PRIMARY KEY, rezept_id INTEGER, zeit INTEGER, name TEXT)"
         self.db.sql_command(sql)
 
-    def neues_rezept(self, data):
-        biertyp = data[0]
-        biername = data[1]
-        maischphasen = data[2]
-        nachguss = data[3]
-        kochzeit = data[4]
-        hopfenzugabe = data[5]
-    #Der erste Eintrag in rezept wird gemacht, um danach die ID zu bekommen fuer Maisch und Hopfenphasen
-        sql = "INSERT INTO rezept (name, biertyp, kochzeit, nachguss) VALUES ('%s', '%s', '%s', '%s')" % (biername, biertyp, kochzeit, nachguss)
-        self.db.sql_command(sql)
-    #Rezept_ID wird abgefragt
-        sql = "SELECT last_insert_rowid() FROM rezept"
-        self.db.sql_command(sql)
-        rezept_id = self.db.sql_return()[0]
-    #Maischphasen eintragen
-        for x in range(len(maischphasen)):
-            sql = "INSERT INTO maischphasen (rezept_id, zeit, temperatur) VALUES ('%s', '%s', '%s')" % (rezept_id, maischphasen[x][0], maischphasen[x][1])
+    def make_rezept(self, data):
+        maischphasen = data["maischphasen"]
+        hopfenbeigabe = data["hopfenbeigabe"]
+    #REZEPT VERAENDERN: Rezept soll veraendert werden
+        print data
+        if self.is_int(data["rezept_id"]) == True:
+            print "update"
+        #Alte Maischzeiten werden geloescht
+            sql = "DELETE FROM maischphasen WHERE rezept_id='%s'" % data["rezept_id"]
             self.db.sql_command(sql)
-            print maischphasen[x][0]
-    #Hopfenzugaben werden eingetragen
-        for x in range(len(hopfenzugabe)):
-            sql = "INSERT INTO hopfenzugabe (rezept_id, zeit, name) VALUES ('%s', '%s', '%s')" % (rezept_id, hopfenzugabe[x][0], hopfenzugabe[x][1])
+        #Alte Hopfenbeigaben werden geloescht
+            sql = "DELETE FROM hopfenbeigabe WHERE rezept_id='%s'" % data["rezept_id"]
             self.db.sql_command(sql)
-    #TEST
-        sql = "SELECT * FROM rezept"
-        self.db.sql_command(sql)
-        print self.db.sql_return()
-        sql = "SELECT * FROM maischphasen"
-        self.db.sql_command(sql)
-        for row in self.db.sql_return_all():
-            for x in range(len(row)):
-                print row[x]
-        sql = "SELECT * FROM hopfenzugabe"
-        self.db.sql_command(sql)
-        for row in self.db.sql_return_all():
-            for x in range(len(row)):
-                print row[x]
+        #Der Eintrag in rezept wird geaendert
+            sql = "UPDATE rezept SET biername='%s', biertyp='%s', kochzeit='%s', nachguss='%s' WHERE id='%s'" % (data["biername"], data["biertyp"], data["kochzeit"], data["nachguss"], data["rezept_id"])
+            self.db.sql_command(sql)
+        #Maischphasen eintragen
+            for x in range(len(maischphasen)):
+                sql = "INSERT INTO maischphasen (rezept_id, zeit, temperatur) VALUES ('%s', '%s', '%s')" % (data["rezept_id"], maischphasen[x][0], maischphasen[x][1])
+                self.db.sql_command(sql)
+        #Hopfenzugaben werden eingetragen
+            for x in range(len(hopfenbeigabe)):
+                sql = "INSERT INTO hopfenbeigabe (rezept_id, zeit, name) VALUES ('%s', '%s', '%s')" % (data["rezept_id"], hopfenbeigabe[x][0], hopfenbeigabe[x][1])
+                self.db.sql_command(sql)
+    #NEUES REZEPT: Es soll ein neuer Eintrag gemacht werden
+        else:
+            print "new"
+        #Der erste Eintrag in rezept wird gemacht, um danach die ID zu bekommen fuer Maisch und Hopfenphasen
+            sql = "INSERT INTO rezept (biername, biertyp, kochzeit, nachguss, erstellung) VALUES ('%s', '%s', '%s', '%s', '%s')" % (data["biername"], data["biertyp"], data["kochzeit"], data["nachguss"], time.time())
+            self.db.sql_command(sql)
+        #Rezept_ID wird abgefragt
+            sql = "SELECT last_insert_rowid() FROM rezept"
+            self.db.sql_command(sql)
+            rezept_id = self.db.sql_return()[0]
+        #Maischphasen eintragen
+            for x in range(len(maischphasen)):
+                sql = "INSERT INTO maischphasen (rezept_id, zeit, temperatur) VALUES ('%s', '%s', '%s')" % (rezept_id, maischphasen[x][0], maischphasen[x][1])
+                self.db.sql_command(sql)
+                print maischphasen[x][0]
+        #Hopfenzugaben werden eingetragen
+            for x in range(len(hopfenbeigabe)):
+                sql = "INSERT INTO hopfenbeigabe (rezept_id, zeit, name) VALUES ('%s', '%s', '%s')" % (rezept_id, hopfenbeigabe[x][0], hopfenbeigabe[x][1])
+                self.db.sql_command(sql)
 #Funktion zur ueberpruefung ob ein Wert ein Integer ist
     def is_int(self, value):
         try:
@@ -111,17 +117,48 @@ class rezept():
     #Checken ob rezept_id ein Integer ist
         if self.is_int(rezept_id)==True:
         #Datei fuer den Return wird vorbereitet
-            daten = {bier_id}
+            Rezept = {"rezept_id" : {}, "maischphasen" : {}, "hopfenbeigabe": {}, "biertyp" : {}, "biername" : {}, "kochzeit" : {}, "nachguss" : {}}
             sql = "SELECT * FROM rezept WHERE id = '%s'" % rezept_id
             self.db.sql_command(sql)
         #Rezeptinformationen
-            datan.append = self.db.sql_return()
+            daten = self.db.sql_return()
+            Rezept["rezept_id"] = rezept_id
+            Rezept["biername"] = daten[0]
+            Rezept["biertyp"] = daten[1]
+            Rezept["kochzeit"] = daten[2]
+            Rezept["nachguss"] = daten[3]
         #Hopfenzugaben werden aus der Datenbank gelesen
             sql = "SELECT * FROM hopfenzugabe WHERE rezept_id = '%s'" % rezept_id
             self.db.sql_command(sql)
-            data2 = self.db.sql_return_all()
+            all_return = self.db.sql_return_all()
+            data = []
+            for row in all_return:
+                data2 = []
+                for x in range(len(row)):
+                    data2.extend([str(row[x])])
+                data.extend([data2])
+            Rezept["maischphasen"] = data
         #Maischzeiten werden aus der Datenbank gelesen
             sql = "SELECT * FROM maischphasen WHERE rezept_id = '%s'" % rezept_id
             self.db.sql_command(sql)
-            data3 = self.db.sql_return_all()
-        #
+            all_return = self.db.sql_return_all()
+            data = []
+            for row in all_return:
+                data2 = []
+                for x in range(len(row)):
+                    data2.extend([str(row[x])])
+                data.extend([data2])
+            Rezept["hopfenbeigabe"] = data
+            return Rezept
+#Gibt eine Liste fuer den Select raus
+    def get_rezept_liste(self):
+        sql = "SELECT rezept.id, biername, name FROM rezept INNER JOIN biertypen ON rezept.biertyp=biertypen.id"
+        self.db.sql_command(sql)
+        all_return = self.db.sql_return_all()
+        data = []
+        for row in all_return:
+            data2 = []
+            for x in range(len(row)):
+                data2.extend([str(row[x])])
+            data.extend([data2])
+        return data

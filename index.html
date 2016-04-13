@@ -94,10 +94,13 @@
 								</div>
 						</div>
 						<div id="div_neues_rezept1" class=inner>
-							<a id="neues_rezept1" class="button special">Neues Rezept eingeben</a>
+							<ul class="actions">
+								<li><a id="neues_rezept1" class="button special">Neues Rezept eingeben</a></li>
+								<li><select id="select_alle_rezepte"></select></li>
+								<li><a id="neues_rezept1" class="button special">Neues Rezept eingeben</a></li>
 						</div>
 						<div class="inner" id="div_neues_rezept2" style="display:none;">
-							<h2>Neues Rezept</h2><input type="hidden" value="0" id="rezept_id">
+							<h2 id="rezept_ueberschrift">Neues Rezept</h2><input type="hidden" value="" id="rezept_id">
 							<div class="features" id="section_biertyp">
 								<section>
 									<div id="div_biertyp1">
@@ -115,7 +118,7 @@
 											<li><input type="text" name="biername" id="biername" placeholder="Name des Biers" /></li>
 										</ul>
 										<h3>Maischen</h3>
-										<div id="liste_maischzeit" style="background-color:green; opacity:0.8; color: white; display:none; padding:10px;border-radius: 8px"></div>
+										<div id="liste_maischzeit" style="color: rgba(255, 255, 255, 0.55);background: rgba(255, 255, 255, 0.10); display:none; padding:10px;border-radius: 8px; margin-bottom:10px;"></div>
 											<ul class="actions">
 											<li><a href="#section_biertyp" id="button_maischzeit" class="button special">Maischphasen</a></li>
 										</ul>
@@ -129,7 +132,7 @@
 											<li>Kochzeit: </li>
 											<li><input type="number" name="kochzeit" id="kochzeit" style="width:80px;" placeholder="min" /></li>
 										</ul>
-										<div id="liste_hopfen" style="background-color:green; opacity:0.8; color: white; display:none; padding:10px;border-radius: 8px"></div>
+										<div id="liste_hopfen" style="color: rgba(255, 255, 255, 0.55);background: rgba(255, 255, 255, 0.10); display:none; padding:10px;border-radius: 8px; margin-bottom:10px;"></div>
 											<ul class="actions">
 											<li><a href="#section_biertyp" id="button_hopfen" class="button special">Hopfenbeigabe</a></li>
 										</ul>
@@ -170,8 +173,7 @@
 										<div id="div_inner_maischzeit">
 										</div>
 										<ul class="actions">
-											<li><a href="#section_biertyp" id="button_maischzeit2" class="button special">Speichern</a></li>
-											<li><a href="#section_biertyp" id="button_maischzeit3" class="button">Abbrechen</a></li>
+											<li><a href="#section_biertyp" id="button_maischzeit2" class="button special">zur&uuml;ck</a></li>
 										</ul>
 									</div>
 									<div id="div_hopfen" style="display:none;">
@@ -184,8 +186,7 @@
 										<div id="div_inner_hopfen">
 										</div>
 										<ul class="actions">
-											<li><a href="#section_biertyp" id="button_hopfen2" class="button special">Speichern</a></li>
-											<li><a href="#section_biertyp" id="button_hopfen3" class="button">Abbrechen</a></li>
+											<li><a href="#section_biertyp" id="button_hopfen2" class="button special">zur&uuml;ck</a></li>
 										</ul>
 									</div>
 								</section>

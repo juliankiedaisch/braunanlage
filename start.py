@@ -34,7 +34,9 @@ class SocketHandler(websocket.WebSocketHandler):
 	def on_message(self, message):
 		message = json.loads(message)
 		key = message[0];
-		if key == "b_biertyp":
+		if key == "rezept":
+			rezept_class.make_rezept(message[1])
+		elif key == "b_biertyp":
 		#Was soll gemacht werden. Hinzufuegen=1, Loeschen=0
 			a = message[1][0]
 		#ID bei loeschen, name bei hinzufuegen
@@ -45,7 +47,7 @@ class SocketHandler(websocket.WebSocketHandler):
 		#Hinzufuegen
 			elif a==1:
 				communication_class.data_input("b_biertyp",class_biertyp.add_biertyp(b))
-		if key == "engine":
+		elif key == "engine":
 		#ID des Schrittmotors
 			a = message[1][0]
 		#Einfach nur drehen oder Parameter anpassen
@@ -103,6 +105,9 @@ def erste_daten():
 	communication_class.data_input("engine1_min", engine_list[0].min_position)
 #Alle Biertypen werden abgerufen und an den Client geschickt
 	communication_class.data_input("b_biertyp", [class_biertyp.show_all_biertypen()])
+#Alle Rezepte werden in eine Liste geladen
+	communication_class.data_input("rezept_liste", rezept_class.get_rezept_liste())
+
 
 app = web.Application([
 	(r'/', IndexHandler),
@@ -117,6 +122,8 @@ if __name__ == '__main__':
 	communication_class = data_communication()
 #Klasse Biertyp wird initialisiert
 	class_biertyp = rezept.biertyp("rezept.db")
+#Klasse Rezept wird initialisiert
+	rezept_class = rezept.rezept("rezept.db")
 	app.listen(8888)
 #Server Uhr
 	thread.start_new_thread(main_clock, (communication_class,))
