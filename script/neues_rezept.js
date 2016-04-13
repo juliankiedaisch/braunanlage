@@ -1,10 +1,26 @@
-var mySelect = $('#select_biertypen1');
-var mySelect2 = $('#select_biertypen2');
-var myOptions = ['Pils', 'Weizen', 'Brown Ale'];
+
 var counter = 0;
 var NeuesRezept = [];
 var Maischphasen = [];
 var Hopfenbeigabe = [];
+
+function make_selects(MyOptions) {
+  mySelect = [];
+  mySelect[0] = $('#select_biertypen1');
+  mySelect[1] = $('#select_biertypen2');
+  mySelect[0].empty().append("<option value='' disabled selected hidden>ausw&auml;hlen</option>");
+  mySelect[1].empty().append("<option value='' disabled selected hidden>ausw&auml;hlen</option>");
+  a=0
+  $.each(myOptions, function(val, text) {
+    for (x=0; x<2; x++) {
+      mySelect[x].append(
+          $('<option></option>').val(text[0]).html(text[1])
+      );
+    }
+    a++;
+  });
+}
+
 /* NEUES REZEPT: DIV Rezepteingabe einblenden */
 $('#neues_rezept1').click(function (){
   $('#div_neues_rezept2').show("slow");
@@ -35,6 +51,7 @@ $('#select_biertypen1').change(function () {
 		$(this).css("background-color", "green")
 						.css("color", "white")
 						.css("opacity", "0.8");
+    $("#test_span").text($(this).val());
 });
 /* NEUES REZEPT: Biername eingeben */
 $('#biername').change(function () {
@@ -74,8 +91,6 @@ $('#button_biertyp1').click(function () {
 $('#button_biertyp2').click(function () {
 		$('#div_biertyp1').show("slow");
 		$('#div_biertyp2').hide("slow");
-		myOptions.push($('#neu_biertyp_name').val());
-		mySelect.append($('<option></option>').val($('#neu_biertyp_name').val()).html($('#neu_biertyp_name').val()));
     var data = new Array();
     data[0] = "beertyps";
     data[1] = myOptions;
@@ -188,10 +203,4 @@ $('#button_weg_hopfen').click(function () {
 			counter--;
 			$('#div_inner_hopfen ul').get(counter).remove();
 	}
-});
-/*NEUES REZEPT:  Option für Biertyp hinzufuegen */
-$.each(myOptions, function(val, text) {
-    mySelect.append(
-        $('<option></option>').val(text).html(text)
-    );
 });

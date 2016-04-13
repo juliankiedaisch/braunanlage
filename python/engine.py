@@ -33,10 +33,6 @@ class engine ():
         self.min_position = fetch[1]
         self.max_position = fetch[2]
         self.current_position = fetch[3]
-    #Alle Parameter werden beim Start einmal uebertragen, damit sie sichtbar sind
-        self.dc.data_input( self.name, self.current_position)
-        self.dc.data_input( "engine1_min", self.min_position)
-        self.dc.data_input( "engine1_max", self.max_position)
     def get_engine_position(self):
         return self.current_position
     def get_engine_position_max(self):

@@ -52,6 +52,17 @@ function open_connection() {
         case "engine1_min":
           $engine1_min.text(json.message[1]);
           break;
+        case "b_biertyp":
+          if (json.message[1][1]) {
+            message = new Object()
+            message.ctype = json.message[1][1];
+            message.cstatus = 0;
+            message.cnote = json.message[1][2];
+            show_noty(message);
+          }
+          //Die Selects werden neu gemacht
+          make_selects(json.message[1][0])
+          break;
       }
       //Da der Server die Systemzeit sekuendlich durgibt, benutze ich ein ausbleiben der Nachricht als Zeichen, dass die Verbindung abgebrochen wird.
       ServerConnection = 1;
@@ -110,7 +121,7 @@ function open_connection() {
         });
         cs.cstatus = 1;
       }
-      //ErrorMessage
+      //Hugh ErrorMessage
       else if(cs.ctype==0 && cs.cstatus==0) {
         playSound();
         cs.cstatus = 1;
@@ -122,6 +133,22 @@ function open_connection() {
             onShow: function() {},
             afterShow: function() {},
             onClose: function() {stopSound();},
+            afterClose: function() {},
+            onCloseClick: function() {},
+          }
+        });
+      }
+      //Little ErrorMessage
+      else if(cs.ctype==2 && cs.cstatus==0) {
+        cs.cstatus = 1;
+        noty({
+          text: cs.cnote,
+          type: 'warning',
+          closeWith: ['click'],
+          callback: {
+            onShow: function() {},
+            afterShow: function() {},
+            onClose: function() {},
             afterClose: function() {},
             onCloseClick: function() {},
           }
