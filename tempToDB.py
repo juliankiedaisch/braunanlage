@@ -1,4 +1,5 @@
 import ow
+import os
 import time
 import sqlite3
 from python import database
@@ -31,7 +32,15 @@ class sensor(threading.Thread):
         #Thread wird gestartet
         threading.Thread.__init__(self)
     def get_sensor_liste(self):
-        return  ow.Sensor("/").sensorList()
+        a=0
+        while a==0:
+            try:
+                return ow.Sensor("/").sensorList()
+                a=1
+            except:
+                os.system("sudo service owserver restart")
+                time.sleep(10)
+                print "Server wird neu gestartet"
     def get_sensor(self, sensor, sensorlist):
         for item in sensorlist[:]:
             if item.r_address != sensor:
@@ -46,7 +55,6 @@ class sensor(threading.Thread):
             self.db.sql_command(sql)
             time.sleep(1)
 #warten bis alle Dienste gestartet sind
-time.sleep(60)
 up = sensor("temp_up", "500000071D4C0328", "sensors.db")
 down = sensor("temp_down","570000071CE8A828", "sensors.db")
 up.start()
