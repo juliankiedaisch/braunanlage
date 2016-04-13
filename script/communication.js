@@ -53,7 +53,8 @@ function open_connection() {
           $engine1_min.text(json.message[1]);
           break;
         case "b_biertyp":
-          if (json.message[1][1]) {
+          console.log(json.message[1].length);
+          if (json.message[1].length>1) {
             message = new Object()
             message.ctype = json.message[1][1];
             message.cstatus = 0;

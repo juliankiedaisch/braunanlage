@@ -1,10 +1,40 @@
 
 var counter = 0;
-var NeuesRezept = [];
+var Rezept = [];
 var Maischphasen = [];
 var Hopfenbeigabe = [];
 
-function make_selects(MyOptions) {
+function make_maischphasen(type, myOptions) {
+//Neuer Eintrag(auch mehrere) oder ein Eintrag loeschen
+  switch(type) {
+    //Eintrag wird geloescht
+    case 0:
+      if(Maischphasen.length>0) {
+        $('#div_inner_maischzeit ul').get((Maischphasen.length-1)).remove();
+        $('#liste_maischzeit ul').get((Maischphasen.length-1)).remove();
+        Maischphasen.pop();
+      }
+      break;
+    //Neuer Eintrag
+    case 1:
+    //Maischphasen wird ueberschrieben
+      Maischphasen = myOptions;
+      //Liste im ALlgemeinteil wird geloescht
+      $('#liste_maischzeit').empty();
+      //Liste in der Bearbeitungsmaske wird geloescht
+      $('#div_inner_maischzeit').empty();
+      for (i=0; i<myOptions.length; i++) {
+        console.log(myOptions);
+        //Liste im Allgemeinteil wird neu erstellt:
+        $('#liste_maischzeit').append('<ul class="actions"><li>' + (i +1) + '. Phase: ' + myOptions[i][0] + ' Minuten bei ' + myOptions[i][1] + '°C');
+        //Liste in der Bearbeitungsmaske wird neu erstellt
+        $('#div_inner_maischzeit').append('<ul class="actions"><li><input type="number" min=0 max=400 style="width:80px;" placeholder="min" value="'+ myOptions[i][0] + '" /></li><li><input type="number" min=20 max=100 style="width:80px;" placeholder="°C" value="'+ myOptions[i][1] + '" /></li></ul>');
+      }
+      break;
+  }
+}
+
+function make_selects(myOptions) {
   mySelect = [];
   mySelect[0] = $('#select_biertypen1');
   mySelect[1] = $('#select_biertypen2');
@@ -87,13 +117,28 @@ $('#button_biertyp1').click(function () {
 		$('#div_biertyp2').show("slow");
 		$('#div_biertyp1').hide("slow");
 });
-/* NEUES REZEPT: Biertypen bearbeiten ausblenden (Speichern) */
+/* NEUES REZEPT: Neuer Biertyp Speichern */
 $('#button_biertyp2').click(function () {
 		$('#div_biertyp1').show("slow");
 		$('#div_biertyp2').hide("slow");
     var data = new Array();
-    data[0] = "beertyps";
-    data[1] = myOptions;
+    var data2 = new Array();
+    data[0] = "b_biertyp";
+    data2[0] = 1;
+    data2[1] = $("#neu_biertyp_name").val();
+    data[1] = data2;
+    ws.send(JSON.stringify(data));
+});
+/* NEUES REZEPT:Biertyp Loeschen */
+$('#button_biertyp4').click(function () {
+		$('#div_biertyp1').show("slow");
+		$('#div_biertyp2').hide("slow");
+    var data = new Array();
+    var data2 = new Array();
+    data[0] = "b_biertyp";
+    data2[0] = 0;
+    data2[1] = $("#select_biertypen2").val();
+    data[1] = data2;
     ws.send(JSON.stringify(data));
 });
 /*NEUES REZEPT: Biertyp bearbeiten ausblenden (Abbrechen) */
@@ -116,30 +161,22 @@ $('#button_hopfen').click(function () {
 $('#button_maischzeit2').click(function () {
 		$('#div_biertyp1').show("slow");
 		$('#div_maischzeit').hide("slow");
-		$('#liste_maischzeit').empty();
 		var a = 0;
-		var maisch_html = "";
+    var phasen = []
 		/* Alle Inputs werden abgefragt. Da pro Maischzeit immer 2 inputs existieren muss hier der Counter verdopplet werden. */
-		for (i= 0; i<(counter*2); i++) {
+		for (i= 0; i<(Maischphasen.length*2); i++) {
 			/* Counter beginnt bei 0, und bei allen geraden inputs ist die Zeit gegeben. bei den ungeraden deshalb die Temperatur */
 			if(i%2==0) {
 				/* Zeit */
-				Maischphasen[a] = [$('#div_inner_maischzeit input').get(i).value];
-				maisch_html = $('#div_inner_maischzeit input').get(i).value;
+				phasen[a] = [$('#div_inner_maischzeit input').get(i).value];
 			}
 			else {
 				/* Temperatur */
-				Maischphasen[a].push($('#div_inner_maischzeit input').get(i).value);
-				$('#liste_maischzeit').append('<ul class="actions"><li>' + (a +1) + '. Phase: ' + maisch_html + ' Minuten bei ' + $('#div_inner_maischzeit input').get(i).value + '°C');
-				maisch_html = "";
+				phasen[a].push($('#div_inner_maischzeit input').get(i).value);
 				a++;
 			}
 		}
-		NeuesRezept[2] = Maischphasen;
-		var data = new Array();
-		data[0] = "beertyps";
-    data[1] = NeuesRezept;
-    ws.send(JSON.stringify(data));
+    make_maischphasen(1, phasen);
 });
 /*NEUES REZEPT:  Hopfenzugabe Speichern */
 $('#button_hopfen2').click(function () {
@@ -164,10 +201,10 @@ $('#button_hopfen2').click(function () {
 				a++;
 			}
 		}
-		NeuesRezept[5] = Hopfenbeigabe;
+		Rezept[5] = Hopfenbeigabe;
 		var data = new Array();
 		data[0] = "beertyps";
-    data[1] = NeuesRezept;
+    data[1] = Rezept;
     ws.send(JSON.stringify(data));
 });
 /*NEUES REZEPT: Maischzeiten bearbeiten ausblenden (Abbrechen) */
@@ -182,8 +219,9 @@ $('#button_hopfen3').click(function () {
 });
 /*NEUES REZEPT:  Neue Maischzeit hinzufuegen */
 $('#button_neu_maischzeit').click(function () {
-		$('#div_inner_maischzeit').append('<ul class="actions"><li>'+ (counter + 1) + '. Phase:</li><li><input type="number" min=0 max=400 style="width:80px;" name="maischzeit_zeit[' + counter +']" id="maischzeit_zeit[' + counter +']" placeholder="min" /></li><li><input type="number" min=20 max=100 style="width:80px;" name="maischzeit_temp[' + counter +']" id="maischzeit_temp[' + counter +']" placeholder="°C" /></li></ul>');
-		counter++;
+    phasen = Maischphasen;
+    phasen.push(["",""]);
+		make_maischphasen(1, phasen);
 });
 /*NEUES REZEPT:  Neue Hopfenbeigabe hinzufuegen */
 $('#button_neu_hopfen').click(function () {
@@ -192,10 +230,7 @@ $('#button_neu_hopfen').click(function () {
 });
 /*NEUES REZEPT:  Neue Maischzeit entfernen */
 $('#button_weg_maischzeit').click(function () {
-		if (counter >= 1) {
-			counter--;
-			$('#div_inner_maischzeit ul').get(counter).remove();
-	}
+    make_maischphasen(0, Maischphasen);
 });
 /*NEUES REZEPT:  Neue Hopfenzugabe entfernen */
 $('#button_weg_hopfen').click(function () {

@@ -28,6 +28,8 @@ class SocketHandler(websocket.WebSocketHandler):
 	def open(self):
 		if self not in cl:
 			cl.append(self)
+			print self
+			erste_daten()
 	#Message from Client Handler
 	def on_message(self, message):
 		message = json.loads(message)
@@ -92,6 +94,16 @@ def main_clock(dc):
 		dc.data_input("server_clock", time.strftime("%H:%M:%S"))
 		time.sleep(1)
 
+def erste_daten():
+#Aktuelle Position des Schrittmotors anzeigen
+	communication_class.data_input("engine1", engine_list[0].current_position)
+#Maximale Position des Schrittmotors anzeigen
+	communication_class.data_input("engine1_max", engine_list[0].max_position)
+#Minimale Position des Schrittmotors anzeigen
+	communication_class.data_input("engine1_min", engine_list[0].min_position)
+#Alle Biertypen werden abgerufen und an den Client geschickt
+	communication_class.data_input("b_biertyp", [class_biertyp.show_all_biertypen()])
+
 app = web.Application([
 	(r'/', IndexHandler),
 	(r'/ws', SocketHandler),
@@ -103,6 +115,8 @@ app = web.Application([
 
 if __name__ == '__main__':
 	communication_class = data_communication()
+#Klasse Biertyp wird initialisiert
+	class_biertyp = rezept.biertyp("rezept.db")
 	app.listen(8888)
 #Server Uhr
 	thread.start_new_thread(main_clock, (communication_class,))
@@ -115,17 +129,7 @@ if __name__ == '__main__':
 	gpios1 = [22,23,24,25]
 	engine_list = [0 for x in range(2)]
 	engine_list[0] = engine.engine(gpios1, "engine1", communication_class)
-#Aktuelle Position des Schrittmotors anzeigen
-	communication_class.data_input("engine1", engine_list[0].current_position)
-#Maximale Position des Schrittmotors anzeigen
-	communication_class.data_input("engine1_max", engine_list[0].max_position)
-#Minimale Position des Schrittmotors anzeigen
-	communication_class.data_input("engine1_min", engine_list[0].min_position)
 #Threads zum Temperaturauslesen werden gestartet
 	thread.start_new_thread(up.get_temp, (),)
 	thread.start_new_thread(down.get_temp, (),)
-#Klasse Biertyp wird initialisiert
-	class_biertyp = rezept.biertyp("rezept.db")
-#Alle Biertypen werden abgerufen und an den Client geschickt
-	communication_class.data_input("b_biertyp", class_biertyp.show_all_biertypen())
 	ioloop.IOLoop.instance().start()

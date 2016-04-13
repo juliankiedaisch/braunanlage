@@ -6,6 +6,9 @@ class biertyp():
         self.db = database.database(db)
         sql = "CREATE TABLE IF NOT EXISTS biertypen (id INTEGER PRIMARY KEY, name TEXT)"
         self.db.sql_command(sql)
+    #Table fuer die Rezepte wird eingerichtet
+        sql = "CREATE TABLE IF NOT EXISTS rezept (id INTEGER PRIMARY KEY, name TEXT, biertyp INTEGER, kochzeit INTEGER, nachguss INTEGER, erstellung INTEGER)"
+        self.db.sql_command(sql)
     def delet_biertyp(self, id):
     #Zuerst wird geschaut, ob der Biertyp noch verwendet wird
         sql = "SELECT * FROM rezept WHERE biertyp='%s'" % id
@@ -17,7 +20,7 @@ class biertyp():
             return [self.show_all_biertypen(), 1,"Der Biertyp wurde gel&ouml;scht!"]
     #Biertyp wird noch verwendet: Keine Loeschung!
         else:
-            return [self.show_all_biertypen(), 0,"Der Biertyp konnte nicht gel&ouml;scht werden, da er immer noch f&uuml;r mindestens ein Rezept verwendet wird. Diese(s) Rezept(e) m&uuml;ssen erst ge&auml;ndert werden bevor der Biertyp gel&ouml;scht werden kann!"]
+            return [self.show_all_biertypen(), 2,"Der Biertyp konnte nicht gel&ouml;scht werden, da er immer noch f&uuml;r mindestens ein Rezept verwendet wird. Diese(s) Rezept(e) m&uuml;ssen erst ge&auml;ndert werden bevor der Biertyp gel&ouml;scht werden kann!"]
     def add_biertyp(self, name):
     #Zuerst wird geschaut, ob der Biertyp bereits existiert
         sql = "SELECT * FROM biertypen WHERE name='%s'" % name
@@ -29,7 +32,7 @@ class biertyp():
             return [self.show_all_biertypen(), 1,"Der Biertyp '"+ name +"' wurde erstellt!"]
     #Biertyp existiert bereits. Kein Eintrag
         else:
-            return [self.show_all_biertypen(), 0,"Der Biertyp konnte nicht erstellt werden, da es bereits einen Biertyp '"+ name+ "' gibt."]
+            return [self.show_all_biertypen(), 2,"Der Biertyp konnte nicht erstellt werden, da es bereits einen Biertyp '"+ name+ "' gibt."]
 #Ausgabe fuer den Select wird vorbereitet
     def show_all_biertypen(self):
         sql = "SELECT * FROM biertypen"
@@ -50,7 +53,7 @@ class rezept():
     #Verbindung zur Datenbank wird aufgebaut
         self.db = database.database(db)
     #Table fuer die Rezepte wird eingerichtet
-        sql = "CREATE TABLE IF NOT EXISTS rezept (id INTEGER PRIMARY KEY, name TEXT, biertyp INTEGER, kochzeit INTEGER, nachguss INTEGER)"
+        sql = "CREATE TABLE IF NOT EXISTS rezept (id INTEGER PRIMARY KEY, name TEXT, biertyp INTEGER, kochzeit INTEGER, nachguss INTEGER, erstellung INTEGER)"
         self.db.sql_command(sql)
     #Table fuer die Maischphasen wird eingerichtet
         sql = "CREATE TABLE IF NOT EXISTS maischphasen (id INTEGER PRIMARY KEY, rezept_id INTEGER, zeit INTEGER, temperatur INTEGER)"
