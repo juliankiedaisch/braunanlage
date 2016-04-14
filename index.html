@@ -45,9 +45,10 @@
 							<p>Steuerungsstatus : <span id="message_server"></span> : <span id="server_clock"></span></p>
 							<p>Temperatur : <span id="temp_up"></span> : <span id="temp_down"></span></p>
 							<p>Heizkörperstellung Aktuell: <span id="engine1"></span> : <span id="engine2"></span></p>
-							<p>Heizkörperstellung MAX: <span id="engine1_max"></span>
-							<p>Heizkörperstellung MIN: <span id="engine1_min"></span>
-							<p>Drehregler : <a href="#" id="engine1_up" class="button">LOS</a> : <a href="#" id="engine1_down" class="button">STOP</a> </p>
+							<p>Heizkörperstellung MAX: <span id="engine1_max"></span> : <span id="engine2_max"></span>
+							<p>Heizkörperstellung MIN: <span id="engine1_min"></span> : <span id="engine2_min"></span>
+							<p>Drehregler Motor 1 : <a href="#" id="engine1_up" class="button">LOS</a> : <a href="#" id="engine1_down" class="button">STOP</a> </p>
+							<p>Drehregler Motor 2 : <a href="#" id="engine2_up" class="button">LOS</a> : <a href="#" id="engine2_down" class="button">STOP</a> </p>
 						</div>
 						<div class="inner">
 							<div id="div_schrittmotor1">
@@ -94,10 +95,22 @@
 								</div>
 						</div>
 						<div id="div_neues_rezept1" class=inner>
-							<ul class="actions">
-								<li><a id="neues_rezept1" class="button special">Neues Rezept eingeben</a></li>
-								<li><select id="select_alle_rezepte"></select></li>
-								<li><a id="neues_rezept1" class="button special">Neues Rezept eingeben</a></li>
+							<div class="features" id="section_biertyp">
+								<section>
+									<h2>Rezeptverwaltung</h2>
+									<table>
+										<tr>
+											<td><a id="neues_rezept1" class="button special">Neues Rezept eingeben</a></td>
+										</tr>
+										<tr>
+											<td><h3>Rezept zum Bearbeiten ausw&auml;hlen:</h3></td>
+										</tr>
+										<tr>
+											<td><select id="select_alle_rezepte"></select></td>
+										</tr>
+									</table>
+								</section>
+							</div>
 						</div>
 						<div class="inner" id="div_neues_rezept2" style="display:none;">
 							<h2 id="rezept_ueberschrift">Neues Rezept</h2><input type="hidden" value="" id="rezept_id">
@@ -140,6 +153,11 @@
 										<li><a href="#section_biertyp" id="rezept_speichern" style="background-color:green; opacity:0.8;color:white" class="button">Rezept Speichern</a></li>
 										<li><a href="#section_biertyp" id="neues_rezept2" class="button">Abbrechen</a></li>
 									</ul>
+									<div id="div_loeschen" style="display:none;">
+										<ul class="actions">
+											<li><a href="#section_biertyp" id="rezept_loeschen" style="background-color:red; opacity:0.8;color:white" class="button">Rezept L&ouml;schen</a></li>
+										</ul>
+									</div>
 								</div>
 								</section>
 								<section>

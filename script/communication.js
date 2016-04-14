@@ -9,6 +9,9 @@
     var $engine1_position = $('#engine1');
     var $engine1_max = $('#engine1_max');
     var $engine1_min = $('#engine1_min');
+    var $engine2_position = $('#engine2');
+    var $engine2_max = $('#engine2_max');
+    var $engine2_min = $('#engine2_min');
     //Hier wird alles ueber den Zustand der WebSocketverbindung gehaendelt
     //In [0] wird angegeben ob die Verbindung steht , 1 = Verbunden, 0 = Nicht verbunden
     //In [1] wird der Fehler benannt
@@ -52,6 +55,15 @@ function open_connection() {
         case "engine1_min":
           $engine1_min.text(json.message[1]);
           break;
+          case "engine2":
+            $engine2_position.text(json.message[1]);
+            break;
+          case "engine2_max":
+            $engine2_max.text(json.message[1]);
+            break;
+          case "engine2_min":
+            $engine2_min.text(json.message[1]);
+            break;
         case "b_biertyp":
           console.log(json.message[1].length);
           if (json.message[1].length>1) {

@@ -2,11 +2,29 @@ from time import sleep
 import RPi.GPIO as GPIO
 from python import database
 
+class gpio_manager():
+
+    def __init__(self):
+        self.engines = []
+    def start_progress(self, name):
+        if name in self.engines:
+            return False
+        else:
+            self.engines.append(name)
+            return True
+    def end_progress(self, name):
+        self.engines.remove(name)
+        if len(self.engines) == 0:
+            GPIO.cleanup()
+
+
+
 class engine ():
-    def __init__(self, gpios, engine, dc):
+    def __init__(self, gpios, engine, dc, gpiomanager):
         #Datenbank fuer die motorsteuerung
         self.engine_db = "engine.db"
         self.name = engine
+        self.gpiomanager = gpiomanager
         # Verwendete Pins am Rapberry Pi
         #A=22
         #B=23
@@ -68,16 +86,15 @@ class engine ():
             sql = "UPDATE engines SET min_position='%s' WHERE id = '%s'" % (new, self.id)
             self.db.sql_command(sql)
             self.min_position = new
-            self.dc.data_input( "engine1_min", new)
+            self.dc.data_input( self.name +"_min", new)
             self.roll_engine(old, new)
     	#max_position
         elif max_min==1:
             sql = "UPDATE engines SET max_position='%s' WHERE id = '%s'" % (new, self.id)
             self.db.sql_command(sql)
             self.max_position = new
-            self.dc.data_input( "engine1_max", new)
+            self.dc.data_input( self.name +"_max", new)
             self.roll_engine(old, new)
-
     def engine_out(self):
         new = self.min_position
         old = self.current_position
@@ -141,6 +158,13 @@ class engine ():
         GPIO.output(self.A, False)
     def roll_engine(self, old, new):
         schritte = abs(int(old) - int(new))
+    #Solange noch ein weiterer Prozess laeuft, soll gewartet werden
+        while(self.gpiomanager.start_progress(self.name)==False):
+            sleep(1)
+    #Position fuer die Schrittweise uebergabe an den Clienten und die db
+        position = self.current_position
+        #Neue Position wird eingetragen
+        self.current_position = new
         #old<new
         if new>old:
             self.start_GPIOS()
@@ -154,11 +178,8 @@ class engine ():
                 self.Step7()
                 self.Step8()
                 #Aktuelle Position wird eingetragen
-                self.current_position += 1
-                sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (self.current_position, self.id)
-                self.db.sql_command(sql)
-                self.dc.data_input( self.name, self.current_position)
-            GPIO.cleanup()
+                position += 1
+                self.dc.data_input( self.name, position)
         elif new<old:
             self.start_GPIOS()
             for i in range (schritte):
@@ -171,8 +192,9 @@ class engine ():
                 self.Step2()
                 self.Step1()
                 #Aktuelle Position wird eingetragen
-                self.current_position -= 1
-                sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (self.current_position, self.id)
-                self.db.sql_command(sql)
-                self.dc.data_input( self.name, self.current_position)
-            GPIO.cleanup()
+                position -= 1
+                self.dc.data_input( self.name, position)
+        self.gpiomanager.end_progress(self.name)
+        sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
+        self.db.sql_command(sql)
+        print new

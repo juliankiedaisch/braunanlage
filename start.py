@@ -66,16 +66,16 @@ class SocketHandler(websocket.WebSocketHandler):
 			d = message[1][3]
 		#Parameter KONFIGURIEREN
 			if b==1:
-				engine_list[a].set_engine_parameter(c,d)
+				thread.start_new_thread(engine_list[a].set_engine_parameter, (c,d),)
 		#Motor mit uebergebener Anzahl von Schritten drehen lassen
 			elif b==0:
-				engine_list[a].set_engine_position(c,d)
+				thread.start_new_thread(engine_list[a].set_engine_position, (c,d),)
 		#Voll an und abdrehen
 			elif b==2:
 				if c==1:
-					engine_list[a].engine_on()
+					thread.start_new_thread(engine_list[a].engine_on, (),)
 				elif c==0:
-					engine_list[a].engine_out()
+					thread.start_new_thread(engine_list[a].engine_out, (),)
 
 	def on_close(self):
 		if self in cl:
@@ -104,12 +104,19 @@ def main_clock(dc):
 		time.sleep(1)
 
 def erste_daten():
-#Aktuelle Position des Schrittmotors anzeigen
+#Aktuelle Position des Schrittmotors 1 anzeigen
 	communication_class.data_input("engine1", engine_list[0].current_position)
-#Maximale Position des Schrittmotors anzeigen
+#Maximale Position des Schrittmotors 1 anzeigen
 	communication_class.data_input("engine1_max", engine_list[0].max_position)
-#Minimale Position des Schrittmotors anzeigen
+#Minimale Position des Schrittmotors 1 anzeigen
 	communication_class.data_input("engine1_min", engine_list[0].min_position)
+#Aktuelle Position des Schrittmotors 2 anzeigen
+	communication_class.data_input("engine2", engine_list[1].current_position)
+#Maximale Position des Schrittmotors 2 anzeigen
+	communication_class.data_input("engine2_max", engine_list[1].max_position)
+#Minimale Position des Schrittmotors 2 anzeigen
+	communication_class.data_input("engine2_min", engine_list[1].min_position)
+
 #Alle Biertypen werden abgerufen und an den Client geschickt
 	communication_class.data_input("b_biertyp", [class_biertyp.show_all_biertypen()])
 #Alle Rezepte werden in eine Liste geladen
@@ -139,10 +146,15 @@ if __name__ == '__main__':
 #Temperatur auslesen
 	up = temp_sens.sensor(communication_class,"temp_up","sensors.db")
 	down = temp_sens.sensor(communication_class,"temp_down","sensors.db")
-#Motor 1
+#Motor 1 GPIOs
 	gpios1 = [22,23,24,25]
+#Motor 2 GPIOs
+	gpios2 = [18,17,21,4]
+#GPIO Manager
+	gpiomanager = engine.gpio_manager()
 	engine_list = [0 for x in range(2)]
-	engine_list[0] = engine.engine(gpios1, "engine1", communication_class)
+	engine_list[0] = engine.engine(gpios1, "engine1", communication_class, gpiomanager)
+	engine_list[1] = engine.engine(gpios2, "engine2", communication_class, gpiomanager)
 #Threads zum Temperaturauslesen werden gestartet
 	thread.start_new_thread(up.get_temp, (),)
 	thread.start_new_thread(down.get_temp, (),)
