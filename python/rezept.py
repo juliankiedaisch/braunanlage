@@ -62,11 +62,23 @@ class rezept():
         sql = "CREATE TABLE IF NOT EXISTS hopfenbeigabe (id INTEGER PRIMARY KEY, rezept_id INTEGER, zeit INTEGER, name TEXT)"
         self.db.sql_command(sql)
 
+    def delete_rezept(self, rezept_id):
+        print "delete"
+    #Alte Maischzeiten werden geloescht
+        sql = "DELETE FROM maischphasen WHERE rezept_id='%s'" % rezept_id
+        self.db.sql_command(sql)
+    #Alte Hopfenbeigaben werden geloescht
+        sql = "DELETE FROM hopfenbeigabe WHERE rezept_id='%s'" % rezept_id
+        self.db.sql_command(sql)
+    #Der Eintrag in rezept wird geloescht
+        sql = "DELETE FROM rezept WHERE id='%s'" % rezept_id
+        self.db.sql_command(sql)
+    #Neue Selectliste wird uebergebenen
+        return self.get_rezept_liste()
     def make_rezept(self, data):
         maischphasen = data["maischphasen"]
         hopfenbeigabe = data["hopfenbeigabe"]
     #REZEPT VERAENDERN: Rezept soll veraendert werden
-        print data
         if self.is_int(data["rezept_id"]) == True:
             print "update"
         #Alte Maischzeiten werden geloescht
@@ -105,6 +117,8 @@ class rezept():
             for x in range(len(hopfenbeigabe)):
                 sql = "INSERT INTO hopfenbeigabe (rezept_id, zeit, name) VALUES ('%s', '%s', '%s')" % (rezept_id, hopfenbeigabe[x][0], hopfenbeigabe[x][1])
                 self.db.sql_command(sql)
+    #Neue Selectliste wird uebergebenen
+        return self.get_rezept_liste()
 #Funktion zur ueberpruefung ob ein Wert ein Integer ist
     def is_int(self, value):
         try:
@@ -123,23 +137,12 @@ class rezept():
         #Rezeptinformationen
             daten = self.db.sql_return()
             Rezept["rezept_id"] = rezept_id
-            Rezept["biername"] = daten[0]
-            Rezept["biertyp"] = daten[1]
-            Rezept["kochzeit"] = daten[2]
-            Rezept["nachguss"] = daten[3]
+            Rezept["biername"] = daten[1]
+            Rezept["biertyp"] = daten[2]
+            Rezept["kochzeit"] = daten[3]
+            Rezept["nachguss"] = daten[4]
         #Hopfenzugaben werden aus der Datenbank gelesen
-            sql = "SELECT * FROM hopfenzugabe WHERE rezept_id = '%s'" % rezept_id
-            self.db.sql_command(sql)
-            all_return = self.db.sql_return_all()
-            data = []
-            for row in all_return:
-                data2 = []
-                for x in range(len(row)):
-                    data2.extend([str(row[x])])
-                data.extend([data2])
-            Rezept["maischphasen"] = data
-        #Maischzeiten werden aus der Datenbank gelesen
-            sql = "SELECT * FROM maischphasen WHERE rezept_id = '%s'" % rezept_id
+            sql = "SELECT zeit, name FROM hopfenbeigabe WHERE rezept_id = '%s'" % rezept_id
             self.db.sql_command(sql)
             all_return = self.db.sql_return_all()
             data = []
@@ -149,6 +152,17 @@ class rezept():
                     data2.extend([str(row[x])])
                 data.extend([data2])
             Rezept["hopfenbeigabe"] = data
+        #Maischzeiten werden aus der Datenbank gelesen
+            sql = "SELECT zeit, temperatur FROM maischphasen WHERE rezept_id = '%s'" % rezept_id
+            self.db.sql_command(sql)
+            all_return = self.db.sql_return_all()
+            data = []
+            for row in all_return:
+                data2 = []
+                for x in range(len(row)):
+                    data2.extend([str(row[x])])
+                data.extend([data2])
+            Rezept["maischphasen"] = data
             return Rezept
 #Gibt eine Liste fuer den Select raus
     def get_rezept_liste(self):

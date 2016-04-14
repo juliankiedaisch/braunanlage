@@ -35,7 +35,14 @@ class SocketHandler(websocket.WebSocketHandler):
 		message = json.loads(message)
 		key = message[0];
 		if key == "rezept":
-			rezept_class.make_rezept(message[1])
+			communication_class.data_input("rezept_liste", rezept_class.make_rezept(message[1]))
+	#Rezept wird zum bearbeiten angefragt
+		elif key == "b_rezept":
+			communication_class.data_input("b_rezept",rezept_class.get_rezept(message[1]))
+	#Rezept wird geloescht
+		elif key == "rezept_loeschen":
+			communication_class.data_input("rezept_liste", rezept_class.delete_rezept(message[1]))
+	#Biertyp soll bearbeitet werden
 		elif key == "b_biertyp":
 		#Was soll gemacht werden. Hinzufuegen=1, Loeschen=0
 			a = message[1][0]

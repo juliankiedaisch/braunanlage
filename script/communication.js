@@ -62,11 +62,14 @@ function open_connection() {
             show_noty(message);
           }
           //Die Selects werden neu gemacht
-          make_selects(json.message[1][0]);
+          make_selects1(json.message[1][0]);
           break;
         case "rezept_liste":
-          console.log(json.message[1]);
           select_rezepte(json.message[1]);
+          break;
+        case "b_rezept":
+          console.log(json.message[1]);
+          rezept_einlesen(json.message[1]);
           break;
       }
       //Da der Server die Systemzeit sekuendlich durgibt, benutze ich ein ausbleiben der Nachricht als Zeichen, dass die Verbindung abgebrochen wird.

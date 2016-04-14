@@ -9,6 +9,21 @@ var Rezept = {rezept_id : null,
 							};
 var Maischphasen = [];
 var Hopfenbeigabe = [];
+var Selects1 = [];
+var Selects2 = [];
+//Maske wird geleert
+function maske_leeren() {
+  $("#biername").val("");
+  $("#kochzeit").val("");
+  $("#nachguss").val("");
+  $("#rezept_id").val("");
+  make_maischphasen(2,0);
+  make_hopfenphasen(2,0);
+  make_selects1(Selects1);
+}
+
+
+
 //Eingabemaske wird befuellt
 function rezept_einlesen(rezept) {
   //Biertyp
@@ -24,7 +39,14 @@ function rezept_einlesen(rezept) {
   //Nachguss
   $("#nachguss").val(rezept.nachguss);
   //Rezept_ID
-  $("#Rezept_id").val(rezept.rezept_id);
+  $("#rezept_id").val(rezept.rezept_id);
+  //Bearbeitungsmaske wird angezeigt:
+  $('#div_neues_rezept2').show("slow");
+  $('#div_neues_rezept1').hide("slow");
+  //Bearbeitungsmaske wird angepasst
+  $("#rezept_speichern").html("Rezept &auml;ndern");
+  $("#rezept_ueberschrift").html("Rezept &Auml;ndern");
+  $("#div_loeschen").show();
 }
 //Loescht alle EIntraege im Object Rezept
 function delete_rezept_obj(obj) {
@@ -49,20 +71,23 @@ function make_maischphasen(type, myOptions) {
       break;
     //Neuer Eintrag
     case 1:
-    //Maischphasen wird ueberschrieben
       Maischphasen = myOptions;
       //Liste im ALlgemeinteil wird geloescht
       $('#liste_maischzeit').empty();
       //Liste in der Bearbeitungsmaske wird geloescht
       $('#div_inner_maischzeit').empty();
       for (i=0; i<myOptions.length; i++) {
-        console.log(myOptions);
         //Liste im Allgemeinteil wird neu erstellt:
         $('#liste_maischzeit').append('<ul class="actions"><li>' + (i +1) + '. Phase: ' + myOptions[i][0] + ' Minuten bei ' + myOptions[i][1] + '°C');
         //Liste in der Bearbeitungsmaske wird neu erstellt
         $('#div_inner_maischzeit').append('<ul class="actions"><li><input type="number" min=0 max=400 style="width:80px;" placeholder="min" value="'+ myOptions[i][0] + '" /></li><li><input type="number" min=20 max=100 style="width:80px;" placeholder="°C" value="'+ myOptions[i][1] + '" /></li></ul>');
       }
       break;
+    //Alles leeren
+    case 2:
+      $('#div_inner_maischzeit').empty();
+      $('#liste_maischzeit').empty();
+      Maischphasen = [];
   }
 }
 function make_hopfenphasen(type, myOptions) {
@@ -78,24 +103,29 @@ function make_hopfenphasen(type, myOptions) {
       break;
     //Neuer Eintrag
     case 1:
-    //Maischphasen wird ueberschrieben
+    //Hopfenbeigabe wird hinzugefuegt
       Hopfenbeigabe = myOptions;
       //Liste im ALlgemeinteil wird geloescht
       $('#liste_hopfen').empty();
       //Liste in der Bearbeitungsmaske wird geloescht
       $('#div_inner_hopfen').empty();
       for (i=0; i<myOptions.length; i++) {
-        console.log(myOptions);
         //Liste im Allgemeinteil wird neu erstellt:
         $('#liste_hopfen').append('<ul class="actions"><li>' + (i +1) + '. Hopfengabe: Nach ' + myOptions[i][0] + ' Minuten (' + myOptions[i][1] + ')');
         //Liste in der Bearbeitungsmaske wird neu erstellt
         $('#div_inner_hopfen').append('<ul class="actions"><li>'+ (i + 1) + '. Hopfengabe:</li><li><input type="number" min=0 max=400 style="width:80px;" placeholder="min" value="' + myOptions[i][0] + '" /></li><li><input type="text" style="width:120px;" placeholder="Name" value="' + myOptions[i][1] + '" /></li></ul>');
       }
       break;
+  //Alles leeren
+    case 2:
+      $('#div_inner_hopfen').empty();
+      $('#liste_hopfen').empty();
+      Hopfenbeigabe = [];
   }
 }
 //NEUES REZEPT: BIERTYPEN Selects
-function make_selects(myOptions) {
+function make_selects1(myOptions) {
+  Selects1 = myOptions;
   mySelect = [];
   mySelect[0] = $('#select_biertypen1');
   mySelect[1] = $('#select_biertypen2');
@@ -111,10 +141,15 @@ function make_selects(myOptions) {
 }
 //NEUES REZEPT: ZEIGE ALLE REZEPTE
 function select_rezepte(myOptions) {
+//Selects werden gespeichert
+  Selects2 = myOptions;
+//Select wird ausgewaehlt
   mySelect = $('#select_alle_rezepte');
-  mySelect.empty();
+//Select wird geleert und
+//das Feld "auswaehlen" wird hinzugefuegt
+  mySelect.empty().append("<option value='' disabled selected hidden>ausw&auml;hlen</option>");
   $.each(myOptions, function(val, text) {
-      mySelect.append($('<option></option>').val(text[0]).html(text[1] + "(" + text[2] + ")"));
+      mySelect.append($('<option></option>').val(text[0]).html(text[1] + " (" + text[2] + ")"));
     });
 }
 /*NEUES REZEPT:  REZEPT Speichern */
@@ -150,6 +185,7 @@ $('#rezept_speichern').click(function () {
     data[0] = "rezept";
     data[1] = Rezept;
     ws.send(JSON.stringify(data));
+    $('#neues_rezept2').click();
     message = {};
     message.ctype = 1;
     message.cstatus = 0;
@@ -162,11 +198,40 @@ $('#rezept_speichern').click(function () {
     message.cnote = "Es fehlen noch Eintr&auml;ge! Rezept konnte nicht gespeichert werden."
     show_noty(message);
   }
-
-
 });
+$("#rezept_loeschen").click(function () {
+
+  noty({
+    text: 'Wollen Sie dieses Rezept wirklich l&oumlschen',
+    type: 'confirm',
+    buttons: [
+      {
+      addClass: 'btn btn-primary', text: 'NNNEEEIIINN', onClick: function ($noty) {
+        $noty.close();
+        }
+      },
+      {
+        addClass: 'btn btn-danger', text: 'Ja, l&ouml;schen!', onClick: function ($noty) {
+          $noty.close();
+          data = [];
+          data[0] = "rezept_loeschen";
+          data[1] = $("#rezept_id").val();
+          ws.send(JSON.stringify(data));
+          $('#neues_rezept2').click();
+          noty({ text: "Rezept wurde gel&ouml;scht!", type: "success"});
+        }
+      }
+    ]
+  });
+});
+
 /* NEUES REZEPT: DIV Rezepteingabe einblenden */
 $('#neues_rezept1').click(function (){
+  //Bearbeitungsmaske wird angepasst
+  $("#rezept_speichern").html("Rezept speichern");
+  $("#rezept_ueberschrift").html("Neues Rezept");
+  $("#div_loeschen").hide();
+  //Bearbeitungsmaske wird angezeigt
   $('#div_neues_rezept2').show("slow");
   $('#div_neues_rezept1').hide("slow");
 });
@@ -174,6 +239,9 @@ $('#neues_rezept1').click(function (){
 $('#neues_rezept2').click(function (){
   $('#div_neues_rezept1').show("slow");
   $('#div_neues_rezept2').hide("slow");
+  maske_leeren();
+  select_rezepte(Selects2);
+  $("#div_loeschen").hide();
 });
 /* NEUES REZEPT: DIV Maischliste einblenden */
 $('#liste_maischzeit').bind("DOMSubtreeModified",function(){
@@ -289,13 +357,41 @@ $('#button_hopfen3').click(function () {
 });
 /*NEUES REZEPT:  Neue Maischzeit hinzufuegen */
 $('#button_neu_maischzeit').click(function () {
-    phasen = Maischphasen;
-    phasen.push(["",""]);
-		make_maischphasen(1, phasen);
+  var a = 0;
+  var phasen = []
+  /* Alle Inputs werden abgefragt. Da pro Maischzeit immer 2 inputs existieren muss hier der Counter verdopplet werden. */
+  for (i= 0; i<(Maischphasen.length*2); i++) {
+    /* Counter beginnt bei 0, und bei allen geraden inputs ist die Zeit gegeben. bei den ungeraden deshalb die Temperatur */
+    if(i%2==0) {
+      /* Zeit */
+      phasen[a] = [$('#div_inner_maischzeit input').get(i).value];
+    }
+    else {
+      /* Temperatur */
+      phasen[a].push($('#div_inner_maischzeit input').get(i).value);
+      a++;
+    }
+  }
+  phasen.push(["",""]);
+	make_maischphasen(1, phasen);
 });
 /*NEUES REZEPT:  Neue Hopfenbeigabe hinzufuegen */
 $('#button_neu_hopfen').click(function () {
-  phasen = Hopfenbeigabe;
+  var a = 0;
+  var phasen = []
+  /* Alle Inputs werden abgefragt. Da pro Hopfengabe immer 2 inputs existieren muss hier der Counter verdopplet werden. */
+  for (i= 0; i<(Hopfenbeigabe.length*2); i++) {
+    /* Counter beginnt bei 0, und bei allen geraden inputs ist der Hopfenname gegeben. bei den ungeraden deshalb die Temperatur */
+    if(i%2==0) {
+      /* Zeit */
+      phasen[a] = [$('#div_inner_hopfen input').get(i).value];
+    }
+    else {
+      /* Name des Hopfens */
+      phasen[a].push($('#div_inner_hopfen input').get(i).value);
+      a++;
+    }
+  }
   phasen.push(["",""]);
   make_hopfenphasen(1, phasen);
 });
@@ -307,14 +403,10 @@ $('#button_weg_maischzeit').click(function () {
 $('#button_weg_hopfen').click(function () {
 	  make_hopfenphasen(0, Hopfenbeigabe);
 });
-/*NEUES REZEPT:  Speichernbutton in Aendernbutton aendern */
-$('#rezept_id').change(function () {
-  //Wenn eine ID in das Feld eingefuegt wird, aendert sich der Button in "Rezept Aendern"
-	  if($.isNumeric(this.val())) {
-      $("#rezept_speichern").html = "Rezept &auml;ndern"
-      $("#rezept_ueberschrift").html = "Rezept &Auml;ndern"
-    } else {
-      $("#rezept_speichern").html = "Rezept speichern"
-      $("#rezept_ueberschrift").html = "Neues Rezept"
-    }
+//NEUES REZEPT: REZEPT zum bearbeiten wird ausgewaehlt
+$('#select_alle_rezepte').change(function () {
+  var data = new Array();
+  data[0] = "b_rezept";
+  data[1] = $('#select_alle_rezepte').val();
+  ws.send(JSON.stringify(data));
 });
