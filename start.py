@@ -149,7 +149,7 @@ if __name__ == '__main__':
 #Motor 1 GPIOs
 	gpios1 = [22,23,24,25]
 #Motor 2 GPIOs
-	gpios2 = [18,17,21,4]
+	gpios2 = [17,18,11,10]
 #GPIO Manager
 	gpiomanager = engine.gpio_manager()
 	engine_list = [0 for x in range(2)]

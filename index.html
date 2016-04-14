@@ -47,12 +47,35 @@
 							<p>Heizkörperstellung Aktuell: <span id="engine1"></span> : <span id="engine2"></span></p>
 							<p>Heizkörperstellung MAX: <span id="engine1_max"></span> : <span id="engine2_max"></span>
 							<p>Heizkörperstellung MIN: <span id="engine1_min"></span> : <span id="engine2_min"></span>
-							<p>Drehregler Motor 1 : <a href="#" id="engine1_up" class="button">LOS</a> : <a href="#" id="engine1_down" class="button">STOP</a> </p>
-							<p>Drehregler Motor 2 : <a href="#" id="engine2_up" class="button">LOS</a> : <a href="#" id="engine2_down" class="button">STOP</a> </p>
 						</div>
 						<div class="inner">
-							<div id="div_schrittmotor1">
-								<a id="engine_conf1" class="button special">Schrittmotor konfigurieren</a>
+							<div id="div_schrittmotor1" class="features" style="border:solid 1px;">
+								<section>
+									<h2>Schrittmotor: Einstellungen</h2>
+									<table>
+										<tr>
+											<td><a id="engine_conf1" class="button special">Max Min</a></td>
+										</tr>
+										<tr>
+											<td><a id="engine_kal1" class="button special">Kallibrieren</a></td>
+										</tr>
+									</table>
+								</section>
+								<section>
+									<h2>Schrittmotor: Funktionen</h2>
+									<table>
+										<tr>
+											<td>Drehregler Motor 1 :</td>
+											<td><a id="engine1_up" class="button">AN</a></td>
+											<td><a id="engine1_down" class="button">AUS</a></td>
+										</tr>
+										<tr>
+											<td>Drehregler Motor 2 :</td>
+											<td><a id="engine2_up" class="button">AN</a></td>
+											<td><a id="engine2_down" class="button">AUS</a></td>
+										</tr>
+									</table>
+								</sectio>
 							</div>
 							<div id="div_schrittmotor2" style="display:none;">
 								<div class="features">
