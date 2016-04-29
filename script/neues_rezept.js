@@ -149,7 +149,7 @@ function select_rezepte(myOptions) {
 //das Feld "auswaehlen" wird hinzugefuegt
   mySelect.empty().append("<option value='' disabled selected hidden>ausw&auml;hlen</option>");
   $.each(myOptions, function(val, text) {
-      mySelect.append($('<option></option>').val(text[0]).html(text[1] + " (" + text[2] + ")"));
+      mySelect.append($('<option></option>').val(text[0]).html(text[2] + ": " + text[1] + " (" + text[3] + ")"));
     });
 }
 /*NEUES REZEPT:  REZEPT Speichern */

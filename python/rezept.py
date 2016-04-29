@@ -53,7 +53,7 @@ class rezept():
     #Verbindung zur Datenbank wird aufgebaut
         self.db = database.database(db)
     #Table fuer die Rezepte wird eingerichtet
-        sql = "CREATE TABLE IF NOT EXISTS rezept (id INTEGER PRIMARY KEY, biername TEXT, biertyp INTEGER, kochzeit INTEGER, nachguss INTEGER, erstellung INTEGER)"
+        sql = "CREATE TABLE IF NOT EXISTS rezept (id INTEGER PRIMARY KEY, biername TEXT, biertyp INTEGER, kochzeit INTEGER, nachguss INTEGER, erstellung DATETIME DEFAULT CURRENT_TIMESTAMP)"
         self.db.sql_command(sql)
     #Table fuer die Maischphasen wird eingerichtet
         sql = "CREATE TABLE IF NOT EXISTS maischphasen (id INTEGER PRIMARY KEY, rezept_id INTEGER, zeit INTEGER, temperatur INTEGER)"
@@ -166,13 +166,16 @@ class rezept():
             return Rezept
 #Gibt eine Liste fuer den Select raus
     def get_rezept_liste(self):
-        sql = "SELECT rezept.id, biername, name FROM rezept INNER JOIN biertypen ON rezept.biertyp=biertypen.id"
+        sql = "SELECT rezept.id, biername, name, erstellung FROM rezept INNER JOIN biertypen ON rezept.biertyp=biertypen.id"
         self.db.sql_command(sql)
         all_return = self.db.sql_return_all()
         data = []
         for row in all_return:
             data2 = []
-            for x in range(len(row)):
+            for x in range(3):
                 data2.extend([str(row[x])])
+            if row[3]:
+                data2.extend([str(time.strftime("%d.%B %Y", time.gmtime(row[3])))])
+                print str(time.strftime("%d.%B %Y", time.gmtime(row[3])))
             data.extend([data2])
         return data

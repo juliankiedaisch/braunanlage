@@ -6,7 +6,8 @@ class kochen():
         self.engines = engines
         self.sensors = sensors
         self.dc = dc
-    def kallibrieren(self):
+        self.koch_status = "warte..."
+    def kalibrieren(self):
         # Hier werden die Temperaturen ermittelt.
         # Dabei wird die Testfluessigkeit immer maximal erhitzt und dann wird die Einstellung versucht zu ermitteln,
         # um die Temperatur zu halten
@@ -15,45 +16,60 @@ class kochen():
         daten = []
         #Alle Temperaturen werden gecheckt
         for steps in range(0, 8):
-            ziel_temp = test_temps[steps]
+            ziel_temp = float(test_temps[steps])
             current_temp = self.get_middle_temp()
             #Alle Motoren werden voll aufgedreht
             self.engines_on_full()
             #Laeuft solange die Temperatur noch nicht erreicht wurde
             while ziel_temp>current_temp:
+                self.koch_status = "Warten bis Zieltemperatur erreicht wurde."
+                self.dc.put(["kalibrieren", [round(current_temp, 2), ziel_temp, self.get_engine_position_prozent(), self.koch_status]])
                 sleep(10)
-                print current_temp
+                #print current_temp
                 current_temp = self.get_middle_temp()
             #Alle Motoren werden abgedreht
             self.engines_out_full()
             #Laufvariable
             zeit1 = time()
             zeit2 = time()
+            last_temp = current_temp
+            self.koch_status = "Zieltemperatur erreicht."
             #Die Temperatur soll 10 Minuten gehalten werden
-            while (zeit1-zeit2)<600:
-                sleep(1)
+            while abs(zeit2-zeit1)<600:
+                sleep(4)
                 #Aktuelle Zeit wird ermittelt
                 zeit2 = time()
                 current_temp = self.get_middle_temp()
+                self.koch_status = "Zieltemperatur seit %s Sekunden gehalten" % round(abs(zeit1-zeit2))
                 #Temperatur ist gesunken
-                if (ziel_temp-current_temp)>0.2:
+                if (ziel_temp-current_temp)>0.1:
                     #Vergangene Zeit wird zurueckgesetzt
                     zeit1 = time()
                     self.engines_on_seq()
-                    print ("too much: ?", current_temp)
+                    self.koch_status = "Temperatur zu nierdrig"
+                    #print ("too much: ?", current_temp)
                 #Temperatur ist gestiegen
-                elif (current_temp-ziel_temp)>0.2:
+                elif (current_temp-ziel_temp)>0.1:
                     #Vergangene Zeit wird zurueckgesetzt
                     zeit1 = time()
                     self.engines_out_seq()
-                    print ("too less: ?", current_temp)
-            daten.append(get_engines_position())
-            print daten
+                    self.koch_status = "Temperatur zu hoch"
+                    #print ("too less: ?", current_temp)
+                else:
+                    if(last_temp-current_temp)>0 and (ziel_temp-current_temp)>0:
+                        self.engines_on_seq()
+                    elif(last_temp-current_temp)<0 and (ziel_temp-current_temp)<0:
+                        self.engines_out_seq()
+                last_temp = current_temp
+                #Rueckgabe an den Client:
+                self.dc.put(["kalibrieren", [round(current_temp, 2), ziel_temp, self.get_engine_position_prozent(), self.koch_status]])
+            daten.append(self.get_engines_position())
+            #print daten
 #Mittlere Temperatur wird ermittelt
     def get_middle_temp(self):
         temp = 0
         for x in range(len(self.sensors)):
-            temp += self.sensors[x].temperatur
+            temp += float(self.sensors[x].temperatur)
         return (temp/len(self.sensors))
 #Alle Motoren werden voll aufgedreht
     def engines_on_full(self):
@@ -77,3 +93,9 @@ class kochen():
         for x in range(len(self.engines)):
             position.append(self.engines[x].current_position)
         return position
+#Aktuelle Position in Prozent angeben.
+    def get_engine_position_prozent(self):
+        position = 0
+        for x in range(len(self.engines)):
+            position += self.engines[x].current_position_prozent
+        return round(position/len(self.engines))

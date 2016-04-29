@@ -2,20 +2,23 @@ from tornado import websocket, web, ioloop
 import json
 import time
 import thread
-from python import temp_sens, engine, rezept
+import Queue
+from python import temp_sens, engine, rezept, kochen, test_kochen
 cl = []
 
 #Verknuepfen von Datavalue zu Datalist
 class data_communication():
-	def __init__(self):
+	def __init__(self, queue, cl_class):
 	# Json Kommunikation
-		self.test = "test"
-	def data_input(self,name,value):
-		data = {"message": [name, value]}
-		for c in cl:
-			c.write_message(json.dumps(data))
-
-
+		self.queue = queue
+		self.cl = cl_class
+		self.data_input()
+	def data_input(self):
+		while True:
+			cl_local = self.cl
+			data = {"message": self.queue.get()}
+			for c in cl_local:
+				c.write_message(json.dumps(data))
 class IndexHandler(web.RequestHandler):
 	def get(self):
 		self.render("index.html")
@@ -35,13 +38,13 @@ class SocketHandler(websocket.WebSocketHandler):
 		message = json.loads(message)
 		key = message[0];
 		if key == "rezept":
-			communication_class.data_input("rezept_liste", rezept_class.make_rezept(message[1]))
+			main_queue.put(["rezept_liste", rezept_class.make_rezept(message[1])])
 	#Rezept wird zum bearbeiten angefragt
 		elif key == "b_rezept":
-			communication_class.data_input("b_rezept",rezept_class.get_rezept(message[1]))
+			main_queue.put(["b_rezept",rezept_class.get_rezept(message[1])])
 	#Rezept wird geloescht
 		elif key == "rezept_loeschen":
-			communication_class.data_input("rezept_liste", rezept_class.delete_rezept(message[1]))
+			main_queue.put(["rezept_liste", rezept_class.delete_rezept(message[1])])
 	#Biertyp soll bearbeitet werden
 		elif key == "b_biertyp":
 		#Was soll gemacht werden. Hinzufuegen=1, Loeschen=0
@@ -50,10 +53,17 @@ class SocketHandler(websocket.WebSocketHandler):
 			b = message[1][1]
 		#Loeschen
 			if a==0:
-				communication_class.data_input("b_biertyp",class_biertyp.delet_biertyp(b))
+				main_queue.put(["b_biertyp",class_biertyp.delet_biertyp(b)])
 		#Hinzufuegen
 			elif a==1:
-				communication_class.data_input("b_biertyp",class_biertyp.add_biertyp(b))
+				main_queue.put(["b_biertyp",class_biertyp.add_biertyp(b)])
+		elif key == "kalibrieren":
+			a = message[1]
+			print "JAAAA"
+			if a == 1:
+				print "JAAA2"
+				thread.start_new_thread(koch_object.kalibrieren, (),)
+
 		elif key == "engine":
 		#ID des Schrittmotors
 			a = message[1][0]
@@ -85,13 +95,7 @@ class ApiHandler(web.RequestHandler):
 
 	@web.asynchronous
 	def get(self, *args):
-		self.finish()
-		id = self.get_argument("id")
-		value = self.get_argument("value")
-		data = {"id": id, "value" : value}
-		data = json.dumps(data)
-		for c in cl:
-			c.write_message(data)
+		pass
 
 	@web.asynchronous
 	def post(self):
@@ -100,27 +104,28 @@ class ApiHandler(web.RequestHandler):
 
 def main_clock(dc):
 	while True:
-		dc.data_input("server_clock", time.strftime("%H:%M:%S"))
+		dc.put(["server_clock", time.strftime("%H:%M:%S")])
 		time.sleep(1)
 
 def erste_daten():
+	print "hallo"
 #Aktuelle Position des Schrittmotors 1 anzeigen
-	communication_class.data_input("engine1", engine_list[0].current_position)
+	main_queue.put(["engine1", engine_list[0].current_position_prozent])
 #Maximale Position des Schrittmotors 1 anzeigen
-	communication_class.data_input("engine1_max", engine_list[0].max_position)
+	main_queue.put(["engine1_max", engine_list[0].max_position])
 #Minimale Position des Schrittmotors 1 anzeigen
-	communication_class.data_input("engine1_min", engine_list[0].min_position)
+	main_queue.put(["engine1_min", engine_list[0].min_position])
 #Aktuelle Position des Schrittmotors 2 anzeigen
-	communication_class.data_input("engine2", engine_list[1].current_position)
+	main_queue.put(["engine2", engine_list[1].current_position_prozent])
 #Maximale Position des Schrittmotors 2 anzeigen
-	communication_class.data_input("engine2_max", engine_list[1].max_position)
+	main_queue.put(["engine2_max", engine_list[1].max_position])
 #Minimale Position des Schrittmotors 2 anzeigen
-	communication_class.data_input("engine2_min", engine_list[1].min_position)
+	main_queue.put(["engine2_min", engine_list[1].min_position])
 
 #Alle Biertypen werden abgerufen und an den Client geschickt
-	communication_class.data_input("b_biertyp", [class_biertyp.show_all_biertypen()])
+	main_queue.put(["b_biertyp", [class_biertyp.show_all_biertypen()]])
 #Alle Rezepte werden in eine Liste geladen
-	communication_class.data_input("rezept_liste", rezept_class.get_rezept_liste())
+	main_queue.put(["rezept_liste", rezept_class.get_rezept_liste()])
 
 
 app = web.Application([
@@ -133,19 +138,20 @@ app = web.Application([
 ])
 
 if __name__ == '__main__':
-	communication_class = data_communication()
+	main_queue = Queue.Queue()
+	thread.start_new_thread(data_communication, (main_queue, cl))
 #Klasse Biertyp wird initialisiert
 	class_biertyp = rezept.biertyp("rezept.db")
 #Klasse Rezept wird initialisiert
 	rezept_class = rezept.rezept("rezept.db")
 	app.listen(8888)
 #Server Uhr
-	thread.start_new_thread(main_clock, (communication_class,))
+	thread.start_new_thread(main_clock, (main_queue,))
 #Kommunikation mit Client
 #thread.start_new_thread(communication_class.json_communication, (),)
 #Temperatur auslesen
-	up = temp_sens.sensor(communication_class,"temp_up","sensors.db")
-	down = temp_sens.sensor(communication_class,"temp_down","sensors.db")
+	up = temp_sens.sensor(main_queue,"temp_up","sensors.db")
+	down = temp_sens.sensor(main_queue,"temp_down","sensors.db")
 #Motor 1 GPIOs
 	gpios1 = [22,23,24,25]
 #Motor 2 GPIOs
@@ -153,8 +159,12 @@ if __name__ == '__main__':
 #GPIO Manager
 	gpiomanager = engine.gpio_manager()
 	engine_list = [0 for x in range(2)]
-	engine_list[0] = engine.engine(gpios1, "engine1", communication_class, gpiomanager)
-	engine_list[1] = engine.engine(gpios2, "engine2", communication_class, gpiomanager)
+	engine_list[0] = engine.engine(gpios1, "engine1", main_queue, gpiomanager)
+	engine_list[1] = engine.engine(gpios2, "engine2", main_queue, gpiomanager)
+#Testkochen Sensoren:
+	test_kochen_object = test_kochen.test_kochen(engine_list)
+#Kochen:
+	koch_object = kochen.kochen(engine_list, [test_kochen_object.sensor], main_queue)
 #Threads zum Temperaturauslesen werden gestartet
 	thread.start_new_thread(up.get_temp, (),)
 	thread.start_new_thread(down.get_temp, (),)

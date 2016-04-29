@@ -1,22 +1,19 @@
-from python import kochen, temp_sens, engine
-import thread
-#Verknuepfen von Datavalue zu Datalist
-class data_communication():
-	#Definition von Datalist:
-	datavalue = ["server_clock", "temp_up", "temp_down", "power", "engine1", "engine1_max", "engine1_min"]
-	datalist = [0 for x in range(len(datavalue))]
-	def data_input(self,data,value):
-		data_communication.datalist[data_communication.datavalue.index(data)] = value
+from python import test_kochen, kochen, engine
+import Queue
 
-communication_class = data_communication()
-up = temp_sens.sensor(communication_class,"temp_up","500000071D4C0328")
-down = temp_sens.sensor(communication_class,"temp_down","570000071CE8A828")
-thread.start_new_thread(up.get_temp, (),)
-thread.start_new_thread(down.get_temp, (),)
+main_queue = Queue.Queue()
 
+#Motor 1 GPIOs
 gpios1 = [22,23,24,25]
-engine_list = [0 for x in range(1)]
-engine_list[0] = engine.engine(gpios1, "engine1", communication_class)
+#Motor 2 GPIOs
+gpios2 = [17,18,11,10]
+#GPIO Manager
+gpiomanager = engine.gpio_manager()
+engine_list = [0 for x in range(2)]
+engine_list[0] = engine.engine(gpios1, "engine1", main_queue, gpiomanager)
+engine_list[1] = engine.engine(gpios2, "engine2", main_queue, gpiomanager)
 
-k = kochen.kochen(engine_list, [up,down], communication_class)
-k.kallibrieren()
+a = test_kochen.test_kochen(engine_list)
+print a.sensor.temperatur
+b = kochen.kochen(engine_list, [a.sensor], main_queue)
+b.kalibrieren()

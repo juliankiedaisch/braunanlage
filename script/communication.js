@@ -83,6 +83,9 @@ function open_connection() {
           console.log(json.message[1]);
           rezept_einlesen(json.message[1]);
           break;
+        //Alle Informationen zum Kallibrieren.
+        case "kalibrieren":
+          input_kalibrieren(json.message[1]);
       }
       //Da der Server die Systemzeit sekuendlich durgibt, benutze ich ein ausbleiben der Nachricht als Zeichen, dass die Verbindung abgebrochen wird.
       ServerConnection = 1;

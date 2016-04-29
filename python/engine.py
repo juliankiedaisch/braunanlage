@@ -1,6 +1,8 @@
 from time import sleep
 import RPi.GPIO as GPIO
 from python import database
+import thread
+import Queue
 
 class gpio_manager():
 
@@ -16,7 +18,11 @@ class gpio_manager():
         self.engines.remove(name)
         if len(self.engines) == 0:
             GPIO.cleanup()
-
+    def is_in_progress(self, name):
+        if name in self.engines:
+            return False
+        else:
+            return True
 
 
 class engine ():
@@ -25,6 +31,7 @@ class engine ():
         self.engine_db = "engine.db"
         self.name = engine
         self.gpiomanager = gpiomanager
+        self.queue = Queue.Queue()
         # Verwendete Pins am Rapberry Pi
         #A=22
         #B=23
@@ -37,6 +44,8 @@ class engine ():
         self.time = 0.002
         self.dc = dc
         self.db = database.database(self.engine_db)
+    #Fuer den Thread gibt es einen eigenen Cursor:
+        self.db_thread = database.database(self.engine_db)
 		#Tables werden erstellt, falls sie noch nicht existiert:
         sql = "CREATE TABLE IF NOT EXISTS engines (id INTEGER PRIMARY KEY, name TEXT, current_position INTEGER, max_position INTEGER, min_position INTEGER)"
         self.db.sql_command(sql)
@@ -51,12 +60,47 @@ class engine ():
         self.min_position = fetch[1]
         self.max_position = fetch[2]
         self.current_position = fetch[3]
+    #Ordnet jeder Prozentzahl eine Motorstellung zu
+        self.prozent_position_liste = self.prozent_position()
+    #Ordnet jeder Motorstellung einer Prozentzahl zu
+        self.position_prozent_liste = self.position_prozent()
+    #Hier wird die aktuelle Stellung in Prozent ausgegeben
+        self.current_position_prozent = getattr(self.prozent_position_liste, str(self.current_position))
+    #Motorsteuerung wird in einem Thread gestartet
+        thread.start_new_thread(self.roll_engine, (),)
+
     def get_engine_position(self):
         return self.current_position
     def get_engine_position_max(self):
         return self.max_position
     def get_engine_position_min(self):
         return self.min_position
+#Jeder Prozentzahl wird eine Motorstellung zugeordnet
+    def position_prozent(self):
+    #Kallibrieren der Motoren, Endtemperatur soll bei Stellung 80% erreicht sein
+        engine_max = self.max_position
+        engine_min = self.min_position
+        gesamt = abs(engine_max-engine_min)
+        daten = type("daten", (object,), dict())()
+        #Alle moeglichen Prozentzahlen
+        for x in range(101):
+            setattr(daten, str(x), engine_min + self.stellung_calc(x, 100, gesamt))
+        return daten
+#Der Motorstellung wird eine Pozentzahl zugeordnet
+    def prozent_position(self):
+    #Kallibrieren der Motoren, Endtemperatur soll bei Stellung 80% erreicht sein
+        engine_max = self.max_position
+        engine_min = self.min_position
+        gesamt = abs(engine_max-engine_min)
+        daten = type("daten", (object,), dict())()
+        #Alle moeglichen Prozentzahlen
+        for x in range(gesamt+1):
+            setattr(daten, str(engine_min + x), self.stellung_calc(x, gesamt, 100))
+        return daten
+    def stellung_calc(self, value1, value2, value3):
+        steigung = float(value3)/float(value2)
+        stellung = int(round(steigung*value1))
+        return stellung
 	#Motor drehen lassen
 	#p_type=0: Relative Aenderung der Position
 	#p_type=1: Absolute Aenderung der Position
@@ -68,13 +112,19 @@ class engine ():
             new = int(old) + int(position)
             #Ist die Aenderung innerhalb der erlaubten Parametern?
             if (new<self.max_position and new>self.min_position):
-                self.roll_engine(old, new)
+                self.queue.put([old, new])
     	#Absolute Aenderung
         elif p_type==1:
             new = int(position)
             #Ist die Aenderung innerhalb der erlaubten Parametern?
             if (new<self.max_position and new>self.min_position):
-                self.roll_engine(old, new)
+                self.queue.put([old, new])
+        #Motorstellung in Prozent veraendern. Dabei ist die Prozentzahl absolut
+        elif p_type==2:
+            new = self.prozent_stellung_liste[position]
+            #Ist die Aenderung innerhalb der erlaubten Parametern?
+            if (new<self.max_position and new>self.min_position):
+                self.queue.put([old, new])
 
     def set_engine_parameter(self, position, max_min):
         #Aktuelle Position des Motors wird ermittelt
@@ -86,24 +136,24 @@ class engine ():
             sql = "UPDATE engines SET min_position='%s' WHERE id = '%s'" % (new, self.id)
             self.db.sql_command(sql)
             self.min_position = new
-            self.dc.data_input( self.name +"_min", new)
-            self.roll_engine(old, new)
+            self.dc.put([self.name +"_min", new])
+            self.queue.put([old, new])
     	#max_position
         elif max_min==1:
             sql = "UPDATE engines SET max_position='%s' WHERE id = '%s'" % (new, self.id)
             self.db.sql_command(sql)
             self.max_position = new
-            self.dc.data_input( self.name +"_max", new)
-            self.roll_engine(old, new)
+            self.dc.put([self.name +"_max", new])
+            self.queue.put([old, new])
     def engine_out(self):
         new = self.min_position
         old = self.current_position
-        self.roll_engine(old, new)
+        self.queue.put([old, new])
 
     def engine_on(self):
         new = self.max_position
         old = self.current_position
-        self.roll_engine(old, new)
+        self.queue.put([old, new])
 
     def start_GPIOS(self):
         GPIO.setmode(GPIO.BCM)
@@ -156,45 +206,49 @@ class engine ():
         sleep (self.time)
         GPIO.output(self.D, False)
         GPIO.output(self.A, False)
-    def roll_engine(self, old, new):
-        schritte = abs(int(old) - int(new))
-    #Solange noch ein weiterer Prozess laeuft, soll gewartet werden
-        while(self.gpiomanager.start_progress(self.name)==False):
-            sleep(1)
-    #Position fuer die Schrittweise uebergabe an den Clienten und die db
-        position = self.current_position
-        #Neue Position wird eingetragen
-        self.current_position = new
-        #old<new
-        if new>old:
-            self.start_GPIOS()
-            for i in range (schritte):
-                self.Step1()
-                self.Step2()
-                self.Step3()
-                self.Step4()
-                self.Step5()
-                self.Step6()
-                self.Step7()
-                self.Step8()
-                #Aktuelle Position wird eingetragen
-                position += 1
-                self.dc.data_input( self.name, position)
-        elif new<old:
-            self.start_GPIOS()
-            for i in range (schritte):
-                self.Step8()
-                self.Step7()
-                self.Step6()
-                self.Step5()
-                self.Step4()
-                self.Step3()
-                self.Step2()
-                self.Step1()
-                #Aktuelle Position wird eingetragen
-                position -= 1
-                self.dc.data_input( self.name, position)
-        self.gpiomanager.end_progress(self.name)
-        sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (new, self.id)
-        self.db.sql_command(sql)
-        print new
+    def roll_engine(self):
+    #Thread laeuft staendig
+        while True:
+        #Solange noch ein weiterer Prozess laeuft, soll gewartet werden
+            while(self.gpiomanager.start_progress(self.name)==False):
+                sleep(1)
+            queue = self.queue.get()
+            schritte = abs(queue[0] - queue[1])
+        #Position fuer die Schrittweise uebergabe an den Clienten und die db
+            position = self.current_position
+            #Neue Position wird eingetragen
+            self.current_position = queue[1]
+            #old<new
+            if queue[1]>queue[0]:
+                self.start_GPIOS()
+                for i in range (schritte):
+                    self.Step1()
+                    self.Step2()
+                    self.Step3()
+                    self.Step4()
+                    self.Step5()
+                    self.Step6()
+                    self.Step7()
+                    self.Step8()
+                    #Aktuelle Position wird eingetragen
+                    position += 1
+                    self.current_position_prozent = getattr(self.prozent_position_liste, str(position))
+                    self.dc.put([self.name, self.current_position_prozent])
+            elif queue[1]<queue[0]:
+                self.start_GPIOS()
+                for i in range (schritte):
+                    self.Step8()
+                    self.Step7()
+                    self.Step6()
+                    self.Step5()
+                    self.Step4()
+                    self.Step3()
+                    self.Step2()
+                    self.Step1()
+                    #Aktuelle Position wird eingetragen
+                    position -= 1
+                    self.current_position_prozent = getattr(self.prozent_position_liste, str(position))
+                    self.dc.put([self.name, self.current_position_prozent])
+            self.gpiomanager.end_progress(self.name)
+            sql = "UPDATE engines SET current_position='%s' WHERE id = '%s'" % (queue[1], self.id)
+            self.db_thread.sql_command(sql)

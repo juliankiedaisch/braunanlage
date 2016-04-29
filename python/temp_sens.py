@@ -20,7 +20,7 @@ class sensor():
             self.db.sql_command(sql)
             fetch = self.db.sql_return()
             self.temperatur = round(float(fetch[0]),1)
-            self.dc.data_input( self.sensor_name, str(self.temperatur))
+            self.dc.put([self.sensor_name, str(self.temperatur)])
             time.sleep(1)
 
 #up = sensor("500000071D4C0328")

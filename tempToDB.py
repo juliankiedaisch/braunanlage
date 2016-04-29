@@ -50,7 +50,7 @@ class sensor(threading.Thread):
         sensor = self.get_sensor(self.sensor_adr, self.get_sensor_liste())
         while True:
             value = sensor[0].temperature
-            self.temperatur = round(float(value),1)
+            self.temperatur = round(float(value),2)
             sql = "UPDATE sensors SET temperatur='%s' WHERE id = '%s'" % (self.temperatur, self.id)
             self.db.sql_command(sql)
             time.sleep(1)
