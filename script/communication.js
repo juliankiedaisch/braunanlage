@@ -23,7 +23,7 @@
     setTimeout(test_connection, 2000);
 //Verbindung zum WebSocket wird aufgebaut
 function open_connection() {
-    ws = new WebSocket('ws://192.168.178.39:8888/ws');
+    ws = new WebSocket('ws://localhost:8888/ws');
     ws.onopen = function(){
       if (connection_status.ctype != 1) {
         connection_status.cstatus = 0;
@@ -37,6 +37,9 @@ function open_connection() {
       var json = JSON.parse(ev.data);
       //Der Inhalt der Message wird an den richtigen empfaenger verteilt
       switch (json.message[0]) {
+        case "log_liste_full":
+          make_log_liste_full(json.message[1]);
+          break;
         case "server_clock":
           $clock.text(json.message[1]);
           break;

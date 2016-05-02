@@ -3,7 +3,7 @@ import json
 import time
 import thread
 import Queue
-from python import temp_sens, engine, rezept, kochen, test_kochen
+from python import temp_sens, engine_test, rezept, kochen, test_kochen, log
 cl = []
 
 #Verknuepfen von Datavalue zu Datalist
@@ -59,9 +59,7 @@ class SocketHandler(websocket.WebSocketHandler):
 				main_queue.put(["b_biertyp",class_biertyp.add_biertyp(b)])
 		elif key == "kalibrieren":
 			a = message[1]
-			print "JAAAA"
 			if a == 1:
-				print "JAAA2"
 				thread.start_new_thread(koch_object.kalibrieren, (),)
 
 		elif key == "engine":
@@ -108,7 +106,6 @@ def main_clock(dc):
 		time.sleep(1)
 
 def erste_daten():
-	print "hallo"
 #Aktuelle Position des Schrittmotors 1 anzeigen
 	main_queue.put(["engine1", engine_list[0].current_position_prozent])
 #Maximale Position des Schrittmotors 1 anzeigen
@@ -126,7 +123,8 @@ def erste_daten():
 	main_queue.put(["b_biertyp", [class_biertyp.show_all_biertypen()]])
 #Alle Rezepte werden in eine Liste geladen
 	main_queue.put(["rezept_liste", rezept_class.get_rezept_liste()])
-
+#Alle Brauvorgaenge werden angezeigt
+	main_queue.put(["log_liste_full"], log_class.log_liste_all()])
 
 app = web.Application([
 	(r'/', IndexHandler),
@@ -141,9 +139,9 @@ if __name__ == '__main__':
 	main_queue = Queue.Queue()
 	thread.start_new_thread(data_communication, (main_queue, cl))
 #Klasse Biertyp wird initialisiert
-	class_biertyp = rezept.biertyp("rezept.db")
+	class_biertyp = rezept.biertyp("kochen.db")
 #Klasse Rezept wird initialisiert
-	rezept_class = rezept.rezept("rezept.db")
+	rezept_class = rezept.rezept("kochen.db")
 	app.listen(8888)
 #Server Uhr
 	thread.start_new_thread(main_clock, (main_queue,))
@@ -157,10 +155,10 @@ if __name__ == '__main__':
 #Motor 2 GPIOs
 	gpios2 = [17,18,11,10]
 #GPIO Manager
-	gpiomanager = engine.gpio_manager()
+	gpiomanager = engine_test.gpio_manager()
 	engine_list = [0 for x in range(2)]
-	engine_list[0] = engine.engine(gpios1, "engine1", main_queue, gpiomanager)
-	engine_list[1] = engine.engine(gpios2, "engine2", main_queue, gpiomanager)
+	engine_list[0] = engine_test.engine(gpios1, "engine1", main_queue, gpiomanager)
+	engine_list[1] = engine_test.engine(gpios2, "engine2", main_queue, gpiomanager)
 #Testkochen Sensoren:
 	test_kochen_object = test_kochen.test_kochen(engine_list)
 #Kochen:
@@ -168,4 +166,6 @@ if __name__ == '__main__':
 #Threads zum Temperaturauslesen werden gestartet
 	thread.start_new_thread(up.get_temp, (),)
 	thread.start_new_thread(down.get_temp, (),)
+#Log wird gesetzt
+	log_class = log.log("kochen.db")
 	ioloop.IOLoop.instance().start()

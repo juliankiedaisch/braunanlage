@@ -1,4 +1,4 @@
-from python import database
+from python import database, log
 import sqlite3
 import time
 
@@ -52,6 +52,8 @@ class rezept():
     def __init__(self, db):
     #Verbindung zur Datenbank wird aufgebaut
         self.db = database.database(db)
+    #Verbindung zum Log wird hergestellt
+        self.log = log.log(db)
     #Table fuer die Rezepte wird eingerichtet
         sql = "CREATE TABLE IF NOT EXISTS rezept (id INTEGER PRIMARY KEY, biername TEXT, biertyp INTEGER, kochzeit INTEGER, nachguss INTEGER, erstellung DATETIME DEFAULT CURRENT_TIMESTAMP)"
         self.db.sql_command(sql)
@@ -73,6 +75,8 @@ class rezept():
     #Der Eintrag in rezept wird geloescht
         sql = "DELETE FROM rezept WHERE id='%s'" % rezept_id
         self.db.sql_command(sql)
+    #Alle Loggs werden geloescht
+        self.log.delete_log(rezept_id)
     #Neue Selectliste wird uebergebenen
         return self.get_rezept_liste()
     def make_rezept(self, data):
