@@ -8,7 +8,10 @@ class kochen():
         self.sensors = sensors
         self.dc = dc
         self.koch_status = "warte..."
-        self.db = database.database(db)
+        #Datenbank wird initialisiert
+        db_user = "kochen"
+        db_pwd = "kochen"
+        self.db = database.database(db_user,db_pwd,db)
     def kalibrieren(self):
         # Hier werden die Temperaturen ermittelt.
         # Dabei wird die Testfluessigkeit immer maximal erhitzt und dann wird die Einstellung versucht zu ermitteln,

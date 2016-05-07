@@ -151,21 +151,21 @@ if __name__ == '__main__':
 #Kommunikation mit Client
 #thread.start_new_thread(communication_class.json_communication, (),)
 #Temperatur auslesen
-	up = temp_sens.sensor(main_queue,"temp_up","sensors.db")
-	down = temp_sens.sensor(main_queue,"temp_down","sensors.db")
+	up = temp_sens.sensor(main_queue,"temp_up","sensor")
+	down = temp_sens.sensor(main_queue,"temp_down","sensor")
 #Motor 1 GPIOs
 	gpios1 = [22,23,24,25]
 #Motor 2 GPIOs
 	gpios2 = [17,18,11,10]
 #GPIO Manager
-	gpiomanager = engine_test.gpio_manager()
+	gpiomanager = engine.gpio_manager()
 	engine_list = [0 for x in range(2)]
 	engine_list[0] = engine.engine(gpios1, "engine1", main_queue, gpiomanager)
 	engine_list[1] = engine.engine(gpios2, "engine2", main_queue, gpiomanager)
 #Testkochen Sensoren:
-	test_kochen_object = test_kochen.test_kochen(engine_list)
+	#test_kochen_object = test_kochen.test_kochen(engine_list)
 #Kochen:
-	koch_object = kochen.kochen(engine_list, [test_kochen_object.sensor], main_queue, "engine")
+	koch_object = kochen.kochen(engine_list, [up, down], main_queue, "kochen")
 #Threads zum Temperaturauslesen werden gestartet
 	thread.start_new_thread(up.get_temp, (),)
 	thread.start_new_thread(down.get_temp, (),)

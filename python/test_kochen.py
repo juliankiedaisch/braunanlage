@@ -22,10 +22,13 @@ class test_kochen():
         start = int(engine_min)
         end = int(engine_max)
         daten = type("daten", (object,), dict())()
-        #Alle moeglichen Motorstellungen werden abgerufen
-        for x in range(start, end+1):
-            setattr(daten, str(x), str(float(start_temp + self.get_temp_to_stellung(x-start, gesamt, start_temp, end_temp))))
-            print str(float(start_temp + self.get_temp_to_stellung(x, gesamt, start_temp, end_temp)))
+        if gesamt > 0:
+            #Alle moeglichen Motorstellungen werden abgerufen
+            for x in range(start, end+1):
+                setattr(daten, str(x), str(float(start_temp + self.get_temp_to_stellung(x-start, gesamt, start_temp, end_temp))))
+                print str(float(start_temp + self.get_temp_to_stellung(x, gesamt, start_temp, end_temp)))
+        else:
+            setattr(daten, "0", 0)
         return daten
     def get_temp_to_stellung(self, m_stellung, m_gesamt, t_start, t_end):
         gesamt_motor = m_gesamt

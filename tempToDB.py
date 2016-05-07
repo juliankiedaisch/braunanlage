@@ -21,16 +21,12 @@ class sensor(threading.Thread):
         db_pwd = "put_temp"
         self.db = database.database(db_user,db_pwd,db)
 		#Tables werden erstellt, falls sie noch nicht existiert:
-        sql = "CREATE TABLE IF NOT EXISTS sensors (id INTEGER PRIMARY KEY, name TEXT, temperatur REAL)"
-        self.db.sql_command(sql)
+        #sql = "CREATE TABLE IF NOT EXISTS sensors (name CHAR(50) UNIQUE KEY, temperatur REAL)"
+        #self.db.sql_command(sql)
 		#Der Sensor wird eingetragen, falls er noch nicht existiert
-        sql = "INSERT INTO sensors (name, temperatur) SELECT '%s', 0 WHERE NOT EXISTS(SELECT 1 FROM sensors WHERE name = '%s')" % (self.sensor_name, self.sensor_name)
+        sql = "REPLACE INTO sensors SET name = '%s'" % self.sensor_name
         self.db.sql_command(sql)
-        #ID des Sensors wird abgefragt
-        sql = "SELECT id FROM sensors WHERE name='%s'" % self.sensor_name
-        self.db.sql_command(sql)
-        fetch = self.db.sql_return()
-        self.id = fetch[0]
+        print self.sensor_name
         #Thread wird gestartet
         threading.Thread.__init__(self)
     def get_sensor_liste(self):
@@ -53,11 +49,12 @@ class sensor(threading.Thread):
         while True:
             value = sensor[0].temperature
             self.temperatur = round(float(value),2)
-            sql = "UPDATE sensors SET temperatur='%s' WHERE id = '%s'" % (self.temperatur, self.id)
+            sql = "UPDATE sensors SET temperatur='%s' WHERE name = '%s'" % (self.temperatur, self.sensor_name)
             self.db.sql_command(sql)
+            print self.temperatur
             time.sleep(1)
 #warten bis alle Dienste gestartet sind
-up = sensor("temp_up", "500000071D4C0328", "sensors.db")
-down = sensor("temp_down","570000071CE8A828", "sensors.db")
+up = sensor("temp_up", "500000071D4C0328", "sensor")
+down = sensor("temp_down","570000071CE8A828", "sensor")
 up.start()
 down.start()

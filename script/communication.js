@@ -23,7 +23,7 @@
     setTimeout(test_connection, 2000);
 //Verbindung zum WebSocket wird aufgebaut
 function open_connection() {
-    ws = new WebSocket('ws://localhost:8888/ws');
+    ws = new WebSocket('ws://192.168.178.39:8888/ws');
     ws.onopen = function(){
       if (connection_status.ctype != 1) {
         connection_status.cstatus = 0;

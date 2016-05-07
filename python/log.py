@@ -3,12 +3,14 @@ from python import database
 
 class log():
     def __init__(self, db):
-        self.db = database.database(db)
+        db_user = "log"
+        db_pwd = "log"
+        self.db = database.database(db_user,db_pwd,db)
         #Tabelle wird erstellt, falls nicht vorhanden
-        sql = "CREATE TABLE IF NOT EXISTS koch_log_id (koch_id INTEGER PRIMARY KEY, rezept_id INTEGER, status INTEGER, start DATETIME DEFAULT CURRENT_TIMESTAMP)"
+        sql = "CREATE TABLE IF NOT EXISTS koch_log_id (koch_id INTEGER PRIMARY KEY, rezept_id INTEGER, status INTEGER, start DATETIME)"
         self.db.sql_command(sql)
         #Tabelle wird erstellt, falls nicht vorhanden
-        sql = "CREATE TABLE IF NOT EXISTS koch_log (koch_id INTEGER, type INTEGER, info TEXT, engines Text, sensors Text, zeit DATETIME DEFAULT CURRENT_TIMESTAMP)"
+        sql = "CREATE TABLE IF NOT EXISTS koch_log (koch_id INTEGER, type INTEGER, info TEXT, engines Text, sensors Text, zeit DATETIME)"
         self.db.sql_command(sql)
 #Alle Logs werden aufgelistet
     def log_liste_all(self):

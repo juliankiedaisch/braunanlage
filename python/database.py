@@ -7,7 +7,7 @@ class database():
 		self.cursor = self.connection.cursor()
 	def sql_command(self, sql):
 		self.cursor.execute(sql)
-		#self.connection.commit()
+		self.connection.commit()
 	def sql_return(self):
 		return self.cursor.fetchone()
 	def sql_return_all(self):

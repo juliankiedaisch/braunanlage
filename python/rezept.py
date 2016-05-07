@@ -53,11 +53,13 @@ class rezept():
 
     def __init__(self, db):
     #Verbindung zur Datenbank wird aufgebaut
-        self.db = database.database(db)
+        db_user = "rezept"
+        db_pwd = "rezept"
+        self.db = database.database(db_user,db_pwd,db)
     #Verbindung zum Log wird hergestellt
         self.log = log.log(db)
     #Table fuer die Rezepte wird eingerichtet
-        sql = "CREATE TABLE IF NOT EXISTS rezept (id INTEGER PRIMARY KEY, biername TEXT, biertyp INTEGER, kochzeit INTEGER, nachguss INTEGER, erstellung DATETIME DEFAULT CURRENT_TIMESTAMP)"
+        sql = "CREATE TABLE IF NOT EXISTS rezept (id INTEGER PRIMARY KEY, biername TEXT, biertyp INTEGER, kochzeit INTEGER, nachguss INTEGER, erstellung DATETIME)"
         self.db.sql_command(sql)
     #Table fuer die Maischphasen wird eingerichtet
         sql = "CREATE TABLE IF NOT EXISTS maischphasen (id INTEGER PRIMARY KEY, rezept_id INTEGER, zeit INTEGER, temperatur INTEGER)"
