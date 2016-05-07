@@ -1,13 +1,13 @@
-import sqlite3
+import MySQLdb as mdb
 
 class database():
 
-	def __init__(self, name):
-		self.connection = sqlite3.connect('/home/pi/brausteuerung/database/' + name, check_same_thread=False)
+	def __init__(self, user, pwd, db):
+		self.connection = mdb.connect('localhost', user, pwd, db)
 		self.cursor = self.connection.cursor()
 	def sql_command(self, sql):
 		self.cursor.execute(sql)
-		self.connection.commit()
+		#self.connection.commit()
 	def sql_return(self):
 		return self.cursor.fetchone()
 	def sql_return_all(self):

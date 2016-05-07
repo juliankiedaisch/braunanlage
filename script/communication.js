@@ -3,15 +3,15 @@
     /* Verbindung zum Server wird aufgebaut */
     var ws;
     var $message = $('#message_server');
-    var $clock = $('#server_clock');
-    var $temp_up = $('#temp_up');
-    var $temp_down = $('#temp_down');
-    var $engine1_position = $('#engine1');
-    var $engine1_max = $('#engine1_max');
-    var $engine1_min = $('#engine1_min');
-    var $engine2_position = $('#engine2');
-    var $engine2_max = $('#engine2_max');
-    var $engine2_min = $('#engine2_min');
+    var $clock = [$('#server_clock'),$('#server_clock2')];
+    var $temp_up = [$('#temp_up')];
+    var $temp_down = [$('#temp_down')];
+    var $engine1_position = [$('#engine1'),$('#engine1_1')];
+    var $engine1_max = [$('#engine1_max'),$('#engine1_max_1')];
+    var $engine1_min = [$('#engine1_min'),$('#engine1_min_1')];
+    var $engine2_position = [$('#engine2'),$('#engine2_1')];
+    var $engine2_max = [$('#engine2_max'),$('#engine2_max_1')];
+    var $engine2_min = [$('#engine2_min'),$('#engine2_min_1')];
     //Hier wird alles ueber den Zustand der WebSocketverbindung gehaendelt
     //In [0] wird angegeben ob die Verbindung steht , 1 = Verbunden, 0 = Nicht verbunden
     //In [1] wird der Fehler benannt
@@ -37,38 +37,58 @@ function open_connection() {
       var json = JSON.parse(ev.data);
       //Der Inhalt der Message wird an den richtigen empfaenger verteilt
       switch (json.message[0]) {
+        case "log_vorgang":
+          show_log_vorgang(json.message[1])
+          break;
         case "log_liste_full":
           make_log_liste_full(json.message[1]);
           break;
         case "server_clock":
-          $clock.text(json.message[1]);
+          $.each($clock, function (val, obj) {
+            obj.text(json.message[1]);
+          });
           break;
         case "temp_down":
-          $temp_down.text(json.message[1]);
+          $.each($temp_down, function (val, obj) {
+            obj.text(json.message[1]);
+          });
           break;
         case "temp_up":
-          $temp_up.text(json.message[1]);
+          $.each($temp_up, function (val, obj) {
+            obj.text(json.message[1]);
+          });
           break;
         case "engine1":
-          $engine1_position.text(json.message[1]);
+          $.each($engine1_position, function (val, obj) {
+            obj.text(json.message[1]);
+          });
           break;
         case "engine1_max":
-          $engine1_max.text(json.message[1]);
+          $.each($engine1_max, function (val, obj) {
+            obj.text(json.message[1]);
+          });
           break;
         case "engine1_min":
-          $engine1_min.text(json.message[1]);
+          $.each($engine1_min, function (val, obj) {
+            obj.text(json.message[1]);
+          });
           break;
           case "engine2":
-            $engine2_position.text(json.message[1]);
+            $.each($engine2_position, function (val, obj) {
+              obj.text(json.message[1]);
+            });
             break;
           case "engine2_max":
-            $engine2_max.text(json.message[1]);
+            $.each($engine2_max, function (val, obj) {
+              obj.text(json.message[1]);
+            });
             break;
           case "engine2_min":
-            $engine2_min.text(json.message[1]);
+            $.each($engine2_min, function (val, obj) {
+              obj.text(json.message[1]);
+            });
             break;
         case "b_biertyp":
-          console.log(json.message[1].length);
           if (json.message[1].length>1) {
             message = new Object()
             message.ctype = json.message[1][1];
@@ -83,7 +103,6 @@ function open_connection() {
           select_rezepte(json.message[1]);
           break;
         case "b_rezept":
-          console.log(json.message[1]);
           rezept_einlesen(json.message[1]);
           break;
         //Alle Informationen zum Kallibrieren.

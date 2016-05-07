@@ -6,7 +6,9 @@ class sensor():
     def __init__(self, dc, sensor_name, db):
         self.sensor_name = sensor_name
         self.dc = dc
-        self.temperatur = 0
+        db_user = "get_temp"
+        db_pwd = "get_temp"
+        self.db = database.database(db_user,db_pwd,db)
         #Datenbank wird initialisiert
         self.db = database.database(db)
         #ID des Sensors wird abgefragt

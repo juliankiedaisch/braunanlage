@@ -10,7 +10,7 @@ var Rezept = {rezept_id : null,
 var Maischphasen = [];
 var Hopfenbeigabe = [];
 var Selects1 = [];
-var Selects2 = [];
+var Selects3 = [];
 //Maske wird geleert
 function maske_leeren() {
   $("#biername").val("");
@@ -47,6 +47,7 @@ function rezept_einlesen(rezept) {
   $("#rezept_speichern").html("Rezept &auml;ndern");
   $("#rezept_ueberschrift").html("Rezept &Auml;ndern");
   $("#div_loeschen").show();
+  $("#div_rezept_log").show();
 }
 //Loescht alle EIntraege im Object Rezept
 function delete_rezept_obj(obj) {
@@ -142,8 +143,8 @@ function make_selects1(myOptions) {
 //NEUES REZEPT: ZEIGE ALLE REZEPTE
 function select_rezepte(myOptions) {
 //Selects werden gespeichert
-  Selects2 = myOptions;
-//Select wird ausgewaehlt
+  Selects3 = myOptions;
+  //Select wird ausgewaehlt
   mySelect = $('#select_alle_rezepte');
 //Select wird geleert und
 //das Feld "auswaehlen" wird hinzugefuegt
@@ -240,8 +241,9 @@ $('#neues_rezept2').click(function (){
   $('#div_neues_rezept1').show("slow");
   $('#div_neues_rezept2').hide("slow");
   maske_leeren();
-  select_rezepte(Selects2);
+  select_rezepte(Selects3);
   $("#div_loeschen").hide();
+  $("#div_rezept_log").hide();
 });
 /* NEUES REZEPT: DIV Maischliste einblenden */
 $('#liste_maischzeit').bind("DOMSubtreeModified",function(){

@@ -17,7 +17,9 @@ class sensor(threading.Thread):
         self.sensor_adr = sensor_adr
         self.sensor_name = sensor_name
         #Datenbank wird initialisiert
-        self.db = database.database(db)
+        db_user = "put_temp"
+        db_pwd = "put_temp"
+        self.db = database.database(db_user,db_pwd,db)
 		#Tables werden erstellt, falls sie noch nicht existiert:
         sql = "CREATE TABLE IF NOT EXISTS sensors (id INTEGER PRIMARY KEY, name TEXT, temperatur REAL)"
         self.db.sql_command(sql)

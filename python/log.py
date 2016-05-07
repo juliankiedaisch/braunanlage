@@ -4,19 +4,25 @@ from python import database
 class log():
     def __init__(self, db):
         self.db = database.database(db)
+        #Tabelle wird erstellt, falls nicht vorhanden
+        sql = "CREATE TABLE IF NOT EXISTS koch_log_id (koch_id INTEGER PRIMARY KEY, rezept_id INTEGER, status INTEGER, start DATETIME DEFAULT CURRENT_TIMESTAMP)"
+        self.db.sql_command(sql)
+        #Tabelle wird erstellt, falls nicht vorhanden
+        sql = "CREATE TABLE IF NOT EXISTS koch_log (koch_id INTEGER, type INTEGER, info TEXT, engines Text, sensors Text, zeit DATETIME DEFAULT CURRENT_TIMESTAMP)"
+        self.db.sql_command(sql)
 #Alle Logs werden aufgelistet
     def log_liste_all(self):
-        sql = "SELECT koch_id, status, start FROM koch_log_id"
+        sql = "SELECT koch_id, biername, name, status, start FROM koch_log_id INNER JOIN rezept ON rezept_id=rezept.id INNER JOIN biertypen ON rezept.biertyp=biertypen.id"
         self.db.sql_command(sql)
         all_return = self.db.sql_return_all()
         data = []
         for row in all_return:
             data2 = []
-            for x in range(3):
+            for x in range(5):
                 data2.extend([str(row[x])])
-            if row[2]:
+            if row[4]:
             #Zeit wird auf GMT +1 gesetzt
-                data2[x] = str(time.strftime("%d.%m.%Y - %H:%M", time.gmtime(row[2]+60*60*2)))
+                data2[x] = str(time.strftime("%d.%m.%Y - %H:%M", time.gmtime(row[4]+60*60*2)))
             data.extend([data2])
         return data
 #Gibt eine Liste mit den Log-Dateien zurueck, die von diesem Rezept vorhanden sind
@@ -30,7 +36,7 @@ class log():
             for x in range(3):
                 data2.extend([str(row[x])])
             if row[2]:
-                data2[x] = str(time.strftime("%d.%m.%Y - %H:%M", time.gmtime(row[2])))
+                data2[x] = str(time.strftime("%d.%m.%Y - %H:%M", time.gmtime(row[2]+60*60*2)))
             data.extend([data2])
         return data
 #Gibt den Log eines Brauvorgangs zurueck
@@ -41,10 +47,11 @@ class log():
         data = []
         for row in all_return:
             data2 = []
-            for x in range(5):
+            for x in range(6):
                 data2.extend([str(row[x])])
-            #if row[4]:
-            #    data2.extend([str(time.strftime("%d.%B %Y", time.gmtime(row[4])))])
+            if x==5:
+                data2[x] = str(time.strftime("%H:%M:%S", time.gmtime(row[4]-row[5])))
+                print data2[x]
             data.extend([data2])
         return data
 #loescht alle Loggs

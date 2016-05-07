@@ -4,7 +4,9 @@ import time
 
 class biertyp():
     def __init__(self, db):
-        self.db = database.database(db)
+        db_user = "rezept"
+        db_pwd = "rezept"
+        self.db = database.database(db_user,db_pwd,db)
         sql = "CREATE TABLE IF NOT EXISTS biertypen (id INTEGER PRIMARY KEY, name TEXT)"
         self.db.sql_command(sql)
     #Table fuer die Rezepte wird eingerichtet

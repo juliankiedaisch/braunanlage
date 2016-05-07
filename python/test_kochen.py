@@ -22,15 +22,16 @@ class test_kochen():
         start = int(engine_min)
         end = int(engine_max)
         daten = type("daten", (object,), dict())()
-        #Alle moeglichen Temperaturen werden abgelaufen:
-        for x in range(engine_min, engine_max+1):
-            setattr(daten, str(x), str(float(start_temp + self.get_temp_to_stellung(x, start, end, start_temp, end_temp))))
+        #Alle moeglichen Motorstellungen werden abgerufen
+        for x in range(start, end+1):
+            setattr(daten, str(x), str(float(start_temp + self.get_temp_to_stellung(x-start, gesamt, start_temp, end_temp))))
+            print str(float(start_temp + self.get_temp_to_stellung(x, gesamt, start_temp, end_temp)))
         return daten
-    def get_temp_to_stellung(self, m_stellung, e_start, e_end, t_start, t_end):
-        gesamt_motor = abs(e_start-e_end)
-        gesamt_temp = abs((t_start-t_end)*10)
+    def get_temp_to_stellung(self, m_stellung, m_gesamt, t_start, t_end):
+        gesamt_motor = m_gesamt
+        gesamt_temp = abs((t_start-t_end))
         steigung = float(gesamt_temp)/float(gesamt_motor)
-        stellung = int(round(steigung*float(m_stellung-e_start)))
+        stellung = int(round(steigung*float(m_stellung)))
         return stellung
     def start_test(self, motoren):
         thread.start_new_thread(self.start_test_thread, (motoren,),)
