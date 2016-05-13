@@ -25,6 +25,38 @@ class gpio_manager():
             return True
 
 
+class prozent_position(object):
+    def __init__(self, mmax, mmin):
+        #Kallibrieren der Motoren, Endtemperatur soll bei Stellung 80% erreicht sein
+        print "pp2"
+        gesamt = abs(mmax-mmin)
+        #Wenn gesamt != 0:
+        if gesamt > 0:
+        #Alle moeglichen Prozentzahlen
+            for x in range(0,gesamt+1):
+                setattr(self, str(mmin + x), self.stellung_calc(x, gesamt, 100))
+        else:
+            setattr(self, str(mmin), 0)
+    def stellung_calc(self, value1, value2, value3):
+        steigung = float(value3)/float(value2)
+        stellung = int(round(steigung*value1))
+        return stellung
+class position_prozent(object):
+    def __init__(self, mmax, mmin):
+        print "pp1"
+        gesamt = abs(mmax-mmin)
+        #Wenn gesamt != 0:
+        if gesamt > 0:
+            #Alle moeglichen Prozentzahlen
+            for x in range(0,101):
+                setattr(self, str(x), mmin + self.stellung_calc(x, 100, gesamt))
+        else:
+            setattr(self, "0", mmin)
+    def stellung_calc(self, value1, value2, value3):
+        steigung = float(value3)/float(value2)
+        stellung = int(round(steigung*value1))
+        return stellung
+
 class engine ():
     def __init__(self, gpios, engine, dc, gpiomanager):
         #Datenbank fuer die motorsteuerung
@@ -46,11 +78,10 @@ class engine ():
         self.time = 0.002
         self.dc = dc
 		#Tables werden erstellt, falls sie noch nicht existiert:
-        sql = "CREATE TABLE IF NOT EXISTS engines (name CHAR(50) UNIQUE KEY, current_position INTEGER NOT NULL, max_position INTEGER NOT NULL, min_position INTEGER NOT NULL)"
+        sql = "CREATE TABLE IF NOT EXISTS engines (name CHAR(50) UNIQUE KEY, current_position INTEGER DEFAULT 0, max_position INTEGER DEFAULT 0, min_position INTEGER DEFAULT 0)"
         self.db.sql_command(sql)
-		#Der Motor wird eingetragen, falls er noch nicht existiert
-        sql = "REPLACE INTO engines SET name = '%s'" % self.name
-        self.db.sql_command(sql)
+	#sql = "INSERT INTO engines SET name='%s'" % self.name
+	#self.db.sql_command(sql)
         sql = "SELECT current_position, max_position, min_position FROM engines WHERE name = '%s'" % self.name
         self.db.sql_command(sql)
         fetch = self.db.sql_return()
@@ -58,9 +89,9 @@ class engine ():
         self.max_position = fetch[1]
         self.current_position = fetch[2]
     #Ordnet jeder Prozentzahl eine Motorstellung zu
-        self.prozent_position_liste = self.prozent_position()
+        prozent_position(self.max_position, self.min_position)
     #Ordnet jeder Motorstellung einer Prozentzahl zu
-        self.position_prozent_liste = self.position_prozent()
+        position_prozent(self.max_position, self.min_position)
     #Hier wird die aktuelle Stellung in Prozent ausgegeben
         self.current_position_prozent = getattr(self.prozent_position_liste, str(self.current_position))
     #Motorsteuerung wird in einem Thread gestartet
@@ -72,45 +103,7 @@ class engine ():
         return self.max_position
     def get_engine_position_min(self):
         return self.min_position
-#Jeder Prozentzahl wird eine Motorstellung zugeordnet
-    def position_prozent(self):
-    #Kallibrieren der Motoren, Endtemperatur soll bei Stellung 80% erreicht sein
-        print "pp1"
-        engine_max = self.max_position
-        engine_min = self.min_position
-        gesamt = abs(engine_max-engine_min)
-        daten = type("daten", (object,), dict())()
-        #Wenn gesamt != 0:
-        if gesamt > 0:
-            #Alle moeglichen Prozentzahlen
-            for x in range(101):
-                setattr(daten, str(x), engine_min + self.stellung_calc(x, 100, gesamt))
-        else:
-            setattr(daten, "0", engine_min)
-        return daten
-#Der Motorstellung wird eine Pozentzahl zugeordnet
-    def prozent_position(self):
-    #Kallibrieren der Motoren, Endtemperatur soll bei Stellung 80% erreicht sein
-        print "pp2"
-        engine_max = self.max_position
-        engine_min = self.min_position
-        gesamt = abs(engine_max-engine_min)
-        daten = type("daten", (object,), dict())()
-        #Wenn gesamt != 0:
-        if gesamt > 0:
-            #Alle moeglichen Prozentzahlen
-            for x in range(gesamt+1):
-                setattr(daten, str(engine_min + x), self.stellung_calc(x, gesamt, 100))
-        else:
-            setattr(daten, str(engine_min), 0)
-        return daten
-    def stellung_calc(self, value1, value2, value3):
-        steigung = float(value3)/float(value2)
-        stellung = int(round(steigung*value1))
-        return stellung
-	#Motor drehen lassen
-	#p_type=0: Relative Aenderung der Position
-	#p_type=1: Absolute Aenderung der Position
+
     def set_engine_position(self, position, p_type):
         #Aktuelle Position des Motors wird ermittelt
         old = self.get_engine_position()
@@ -138,23 +131,24 @@ class engine ():
         old = self.get_engine_position()
         #Neue Position wird errechnet
         new = int(old) + int(position)
+        print new
         #min_position
-        if max_min==0:
+        if max_min==0 and new<self.max_position:
             sql = "UPDATE engines SET min_position='%s' WHERE name = '%s'" % (new, self.name)
             self.db.sql_command(sql)
             self.min_position = new
             self.dc.put([self.name +"_min", new])
-            self.position_prozent_liste = self.position_prozent()
-            self.prozent_position_liste  = self.prozent_position()
+            self.position_prozent_liste = position_prozent(self.max_position, self.min_position)
+            self.prozent_position_liste  = prozent_position(self.max_position, self.min_position)
             self.queue.put([old, new])
     	#max_position
-        elif max_min==1:
+        elif max_min==1 and new >self.min_position:
             sql = "UPDATE engines SET max_position='%s' WHERE name = '%s'" % (new, self.name)
             self.db.sql_command(sql)
             self.max_position = new
             self.dc.put([self.name +"_max", new])
-            self.position_prozent_liste = self.position_prozent()
-            self.prozent_position_liste  = self.prozent_position()
+            self.position_prozent_liste = position_prozent(self.max_position, self.min_position)
+            self.prozent_position_liste  = prozent_position(self.max_position, self.min_position)
             self.queue.put([old, new])
     def engine_out(self):
         new = self.min_position

@@ -1,19 +1,25 @@
-from python import test_kochen, kochen, engine
-import Queue
+import socket
+Quelle='192.168.178.39' # Adresse des eigenen Rechners
+Port=8800
 
-main_queue = Queue.Queue()
+e_udp_sock = socket.socket( socket.AF_INET,  socket.SOCK_DGRAM ) #s.o.
+e_udp_sock.bind( (Quelle,Port) )
+print '########Dies ist der Empfaenger########'
+print 'Neue Verbindung:'
+print 'Quelle',Quelle
+print 'Port=',Port
 
-#Motor 1 GPIOs
-gpios1 = [22,23,24,25]
-#Motor 2 GPIOs
-gpios2 = [17,18,11,10]
-#GPIO Manager
-gpiomanager = engine.gpio_manager()
-engine_list = [0 for x in range(2)]
-engine_list[0] = engine.engine(gpios1, "engine1", main_queue, gpiomanager)
-engine_list[1] = engine.engine(gpios2, "engine2", main_queue, gpiomanager)
 
-a = test_kochen.test_kochen(engine_list)
-print a.sensor.temperatur
-b = kochen.kochen(engine_list, [a.sensor], main_queue)
-b.kalibrieren()
+
+
+def empfange():
+
+
+
+    while 1:                                        # Endlosschleife
+        data, addr = e_udp_sock.recvfrom( 1024 )
+        print "empfangene Nachricht:", data
+        print "Clientadresse:", addr          # Adresse besteht aus IP und Port
+
+
+empfange()
