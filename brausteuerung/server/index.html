@@ -1,0 +1,319 @@
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Brausteuerung</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="template/assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="template/assets/css/main.css" />
+		<link rel="stylesheet" href="noty/demo/buttons.css" />
+
+		<!--[if lte IE 9]><link rel="stylesheet" href="template/assets/css/ie9.css" /><![endif]-->
+		<!--[if lte IE 8]><link rel="stylesheet" href="template/assets/css/ie8.css" /><![endif]-->
+	</head>
+	<body>
+
+		<!-- Sidebar -->
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
+						<ul>
+							<li><a href="#brauen">Brauen</a></li>
+							<li><a href="#berichte">Berichte</a></li>
+							<li><a href="#rezepte">Rezepte</a></li>
+							<li><a href="#einstellungen">Einstellungen</a></li>
+						</ul>
+					</nav>
+				</div>
+			</section>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!--  Div fuer Alarmsound    -->
+				<div id="alarmsound"></div>
+				<!-- Intro -->
+					<section id="brauen" class="wrapper style4 fullscreen fade-up">
+						<div class="inner">
+							<h1>Status</h1>
+							<p>Steuerungsstatus : <span id="message_server"></span> : <span id="server_clock"></span></p>
+							<p>Temperatur : <span id="temp_up"></span> : <span id="temp_down"></span></p>
+							<p>Test Uhr: <span id="server_clock2"></span></p>
+							<p>Heizkörperstellung Aktuell: <span id="engine1_1"></span>% : <span id="engine2_1"></span>%</p>
+							<p>Heizkörperstellung MAX: <span id="engine1_max_1"></span> : <span id="engine2_max_1"></span></p>
+							<p>Heizkörperstellung MIN: <span id="engine1_min_1"></span> : <span id="engine2_min_1"></span></p>
+						</div>
+					</section>
+					<section id="berichte" class="wrapper style2 fullscreen fade-up">
+						<div class="inner">
+							<div class=features>
+								<section>
+									<h1>Berichte</h1>
+									<p>Kochberichte: <select id="select_koch_log_liste"></select></p>
+									<div id="div_show_log" style="color: rgba(255, 255, 255, 1);background: rgba(255, 255, 255, 0.50); display:none; padding:10px;border-radius: 8px; margin-bottom:10px;"></div>
+								</section>
+								<section>
+									<div id="div_rezept_log" style="display:none;">
+										<h3>Brauberichte</h3>
+										<select id="select_koch_log_liste"></select></p>
+										<div id="div_show_log_rezept" style="color: rgba(255, 255, 255, 1);background: rgba(255, 255, 255, 0.50); display:none; padding:10px;border-radius: 8px; margin-bottom:10px;"></div>
+									</div>
+								</section>
+							</div>
+						</div>
+					</section>
+					<section id="rezepte" class="wrapper style3 fullscreen fade-up">
+						<div id="div_neues_rezept1" class=inner>
+							<div class="features" id="section_biertyp">
+								<section>
+									<h2>Rezeptverwaltung</h2>
+									<table>
+										<tr>
+											<td><a id="neues_rezept1" class="button special">Neues Rezept eingeben</a></td>
+										</tr>
+										<tr>
+											<td><h3>Rezept zum Bearbeiten ausw&auml;hlen:</h3></td>
+										</tr>
+										<tr>
+											<td><select id="select_alle_rezepte"></select></td>
+										</tr>
+									</table>
+								</section>
+							</div>
+						</div>
+						<div class="inner" id="div_neues_rezept2" style="display:none;">
+							<h2 id="rezept_ueberschrift">Neues Rezept</h2><input type="hidden" value="" id="rezept_id">
+							<div class="features" id="section_biertyp">
+								<section>
+									<div id="div_biertyp1">
+										<h3>Allgemein</h3>
+										<ul class="actions">
+											<li>Biertyp:</li>
+											<li><select name="demo-category" id="select_biertypen1">
+													<option value="" disabled selected hidden>ausw&auml;hlen</option>
+												</select></li>
+											<li><a href="#section_biertyp" id="button_biertyp1" class="button special small">bearbeiten</a></li>
+											<li><span id="test_span"></span></li>
+										</ul>
+										<ul class="actions">
+											<li>Name:</li>
+											<li><input type="text" name="biername" id="biername" placeholder="Name des Biers" /></li>
+										</ul>
+										<h3>Maischen</h3>
+										<div id="liste_maischzeit" style="color: rgba(255, 255, 255, 0.55);background: rgba(255, 255, 255, 0.10); display:none; padding:10px;border-radius: 8px; margin-bottom:10px;"></div>
+											<ul class="actions">
+											<li><a href="#section_biertyp" id="button_maischzeit" class="button special">Maischphasen</a></li>
+										</ul>
+										<h3>L&auml;utern</h3>
+										<ul class="actions">
+											<li>Nachguss: </li>
+											<li><input type="number" name="nachguss" id="nachguss" style="width:80px;" placeholder="°C" /></li>
+										</ul>
+										<h3>Kochen und Hopfenbeigabe</h3>
+										<ul class="actions">
+											<li>Kochzeit: </li>
+											<li><input type="number" name="kochzeit" id="kochzeit" style="width:80px;" placeholder="min" /></li>
+										</ul>
+										<div id="liste_hopfen" style="color: rgba(255, 255, 255, 0.55);background: rgba(255, 255, 255, 0.10); display:none; padding:10px;border-radius: 8px; margin-bottom:10px;"></div>
+											<ul class="actions">
+											<li><a href="#section_biertyp" id="button_hopfen" class="button special">Hopfenbeigabe</a></li>
+										</ul>
+										<ul class="actions">
+										<li><a href="#section_biertyp" id="rezept_speichern" style="background-color:green; opacity:0.8;color:white" class="button">Rezept Speichern</a></li>
+										<li><a href="#section_biertyp" id="neues_rezept2" class="button">Abbrechen</a></li>
+									</ul>
+									<div id="div_loeschen" style="display:none;">
+										<ul class="actions">
+											<li><a href="#section_biertyp" id="rezept_loeschen" style="background-color:red; opacity:0.8;color:white" class="button">Rezept L&ouml;schen</a></li>
+										</ul>
+									</div>
+								</div>
+								</section>
+								<section>
+									<div id="div_biertyp2" style="display:none;">
+										<h3>Biertyp bearbeiten</h3>
+										<ul class="actions">
+											<li>Neuer Biertyp:</li>
+											<li><input type="text" name="demo-name" id="neu_biertyp_name" placeholder="Name" /></li>
+										</ul>
+										<ul class="actions">
+											<li><a href="#section_biertyp" id="button_biertyp2" class="button special">Speichern</a></li>
+										</ul>
+										<ul class="actions">
+											<li>Biertyp l&ouml;schen:</li>
+											<li><select name="demo-category" id="select_biertypen2">
+													<option value="" disabled selected hidden>ausw&auml;hlen</option>
+											</select></li>
+										</ul>
+										<ul class="actions">
+											<li><a href="#section_biertyp" id="button_biertyp4" class="button special">L&ouml;schen</a></li>
+											<li><a href="#section_biertyp" id="button_biertyp3" class="button">Abbrechen</a></li>
+										</ul>
+									</div>
+									<div id="div_maischzeit" style="display:none;">
+										<h3>Maischen bearbeiten</h3>
+										<ul class="actions">
+											<li>Neue Maischzeiten:</li>
+											<li><a href="#section_biertyp" id="button_neu_maischzeit" class="button">+</a></li>
+												<li><a href="#section_biertyp" id="button_weg_maischzeit" class="button">-</a></li>
+										</ul>
+										<div id="div_inner_maischzeit">
+										</div>
+										<ul class="actions">
+											<li><a href="#section_biertyp" id="button_maischzeit2" class="button special">zur&uuml;ck</a></li>
+										</ul>
+									</div>
+									<div id="div_hopfen" style="display:none;">
+										<h3>Hopfen hinzugeben</h3>
+										<ul class="actions">
+											<li>Neuer Hopfen:</li>
+											<li><a href="#section_biertyp" id="button_neu_hopfen" class="button">+</a></li>
+												<li><a href="#section_biertyp" id="button_weg_hopfen" class="button">-</a></li>
+										</ul>
+										<div id="div_inner_hopfen">
+										</div>
+										<ul class="actions">
+											<li><a href="#section_biertyp" id="button_hopfen2" class="button special">zur&uuml;ck</a></li>
+										</ul>
+									</div>
+								</section>
+							</div>
+						</div>
+					</section>
+					<section id="einstellungen" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">
+							<h1>Einstellungen</h1>
+							<p>Heizkörperstellung Aktuell: <span id="engine1"></span>% : <span id="engine2"></span>%</p>
+							<p>Heizkörperstellung MAX: <span id="engine1_max"></span> : <span id="engine2_max"></span></p>
+							<p>Heizkörperstellung MIN: <span id="engine1_min"></span> : <span id="engine2_min"></span></p>
+							<div id="div_schrittmotor1" class="features">
+								<section>
+									<h2>Schrittmotor: Einstellungen</h2>
+									<table>
+										<tr>
+											<td><a id="engine_conf1" class="button special">Max Min</a></td>
+										</tr>
+										<tr>
+											<td><a id="engine_kal1" class="button special">Kallibrieren</a></td>
+										</tr>
+									</table>
+								</section>
+								<section>
+									<h2>Schrittmotor: Funktionen</h2>
+									<table>
+										<tr>
+											<td>Drehregler Motor 1 :</td>
+											<td><a id="engine1_up" class="button">AN</a></td>
+											<td><a id="engine1_down" class="button">AUS</a></td>
+										</tr>
+										<tr>
+											<td>Drehregler Motor 2 :</td>
+											<td><a id="engine2_up" class="button">AN</a></td>
+											<td><a id="engine2_down" class="button">AUS</a></td>
+										</tr>
+									</table>
+								</sectio>
+							</div>
+							<div id="div_schrittmotor3" style="display:none;">
+								<div class="features">
+									<section>
+										<h1>Kallibrieren</h1>
+										<table>
+											<tr>
+												<td><a id="k_start" class="button special">Kallibrieren beginnen</a></td>
+											</tr>
+											<tr>
+												<td><a id="k_pause" class="button">Kallibrieren pausieren</a></td>
+											</tr>
+											<tr>
+												<td><a id="k_end" class="button">Kallibrieren beenden</a></td>
+											</tr>
+										</table>
+									</section>
+									<section>
+										<table>
+											<tr>
+												<td><b>Aktuelle Temperatur:</b></td>
+												<td><span id="k_temp1"></span></td>
+											</tr>
+											<tr>
+												<td><b>Soll Temperatur:</b></td>
+												<td><span id="k_temp2"></span></td>
+											</tr>
+											<tr>
+												<td><b>Motorstellung:</b></td>
+												<td><span id="k_m_stellung"></span></td>
+											</tr>
+											<tr>
+												<td><b>Status:</b></td>
+												<td><span id="k_status"></span></td>
+											</tr>
+										</table>
+									</section>
+								</div>
+							</div>
+							<div id="div_schrittmotor2" style="display:none;">
+								<div class="features">
+									<section>
+										<h1>Schrittmotor 1</h1>
+										<table>
+											<tr>
+												<td>Ausstellungen:</td>
+												<td><a id="button_schrittmotor1_1" class="button special">+</a></td>
+												<td><a id="button_schrittmotor1_2" class="button special">-</a></td>
+											</tr>
+											<tr>
+												<td>Maximalstellung:</td>
+												<td><a id="button_schrittmotor1_3" class="button special">+</a></td>
+												<td><a id="button_schrittmotor1_4" class="button special">-</a></td>
+											</tr>
+										</table>
+									</section>
+									<section>
+										<h1>Schrittmotor 2</h1>
+										<table>
+											<tr>
+												<td>Ausstellungen:</td>
+												<td><a id="button_schrittmotor2_1" class="button special">+</a></td>
+												<td><a id="button_schrittmotor2_2" class="button special">-</a></td>
+											</tr>
+											<tr>
+												<td>Maximalstellung:</td>
+												<td><a id="button_schrittmotor2_3" class="button special">+</a></td>
+												<td><a id="button_schrittmotor2_4" class="button special">-</a></td>
+											</tr>
+										</table>
+									</section>
+									<section>
+										<ul class="actions">
+											<li><a id="engine_conf2" class="button">Abbrechen</a></li>
+										</ul>
+									</section>
+								</div>
+								</div>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="template/assets/js/jquery.min.js"></script>
+			<script src="template/assets/js/jquery.scrollex.min.js"></script>
+			<script src="template/assets/js/jquery.scrolly.min.js"></script>
+			<script src="template/assets/js/skel.min.js"></script>
+			<script src="template/assets/js/util.js"></script>
+			<script src="noty/js/noty/packaged/jquery.noty.packaged.js"></script>
+			<!--[if lte IE 8]><script src="template/assets/js/ie/respond.min.js"></script><![endif]-->
+			<script src="template/assets/js/main.js"></script>
+		<script src="script/communication.js"></script>
+		<script src="script/neues_rezept.js"></script>
+		<script src="script/engine.js"></script>
+		<script src="script/test_kochen.js"></script>
+		<script src="script/log.js"></script>
+	</body>
+</html>
